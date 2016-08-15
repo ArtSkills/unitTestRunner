@@ -30,7 +30,7 @@ class IndexController extends CallableEntity
 			':status' => QUEUE_STATUS_NEW,
 		]);
 
-		$git = new GitHub($this->_config['gitToken']);
-		$git->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, 'Запуск юнит теста');
+		$gitHub = new GitHub($this->_config['gitToken']);
+		$gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, 'в очередь!');
 	}
 }

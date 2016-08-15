@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: vladimirtunikov
- * Date: 15.08.16
- * Time: 14:57
- */
 
 namespace ArtSkills\TestRunner;
 
@@ -26,12 +20,15 @@ class TestingShell extends CallableEntity
 		$testQ->execute([':status' => QUEUE_STATUS_NEW]);
 		$testInfo = $testQ->fetch();
 		if ($testInfo) {
+/*
 			$this->_model->prepare('UPDATE queue SET status=:status WHERE id=:id')
 				->execute([
 					':status' => QUEUE_STATUS_PROCESSING,
 					':id' => $testInfo['id'],
 				]);
-
+			$gitHub = new GitHub($this->_config['gitToken']);
+			$gitHub->changeCommitStatus($testInfo['repository'], $testInfo['sha'], GitHub::STATE_PROCESSING, 'я в работе...');
+*/
 			$testDescription = '';
 			$result = $this->_doTest($this->_config['repositories'][$testInfo['repository']], $testInfo['ref'], $testDescription);
 			if ($result) {
@@ -41,7 +38,7 @@ class TestingShell extends CallableEntity
 				$saveStatus = GitHub::STATE_ERROR;
 				$shortDescription = 'я недоволен';
 			}
-
+/*
 			$branchName = $testInfo['repository'] . '/' . $testInfo['ref'];
 
 			$this->_model->prepare('INSERT INTO history (branch, content) VALUES (:branch, :content)')
@@ -56,15 +53,14 @@ class TestingShell extends CallableEntity
 					'id' => $historyId,
 				]);
 
-			$git = new GitHub($this->_config['gitToken']);
-			print_r($git->changeCommitStatus($testInfo['repository'], $testInfo['sha'], $saveStatus, $shortDescription, $url));
+			$gitHub->changeCommitStatus($testInfo['repository'], $testInfo['sha'], $saveStatus, $shortDescription, $url);
 
 			$this->_model->prepare('UPDATE queue SET status=:status WHERE id=:id')
 				->execute([
 					':status' => QUEUE_STATUS_FINISHED,
 					':id' => $testInfo['id'],
 				]);
-
+*/
 		}
 	}
 
@@ -77,7 +73,26 @@ class TestingShell extends CallableEntity
 	 * @return string
 	 */
 	private function _doTest($repositoryConfig, $ref, &$resultText) {
-		$resultText = print_r($repositoryConfig, true) . "\n" . $ref;
+		$git = new Git($repositoryConfig['deployKey'], $repositoryConfig['repositoryLocation']);
+		$git->checkout($ref);
+		$git->pullCurrentBranch();
+
+		$testModel = new Model($repositoryConfig['database']);
+		$this->_fillTestStructure($testModel, $repositoryConfig['structureFile']);
 		return true;
+	}
+
+	/**
+	 * Заполняем таблицами тестовую базу
+	 *
+	 * @param Model $testModel
+	 * @param string $structureFile
+	 */
+	private function _fillTestStructure($testModel, $structureFile) {
+		$testModel->dropAllTables();
+		$testModel->executeSqlFile($structureFile);
+		// пускать phinx
+		// пускать phpunit
+		$testModel->dropAllTables();
 	}
 }

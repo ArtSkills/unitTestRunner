@@ -13,12 +13,14 @@ return [
 	],
 	'repositories' => [
 		'ArtSkills/site' => [
-			'codeLocation' => '/var/www/site',
-			'structureFile' => '/var/www/db.artskills.gz',
+			'repositoryLocation' => '/var/www/site',
+			'deployKey' => '/var/www/keys/site', // ключ в GitHub, только чтение
+			'structureFile' => '/var/www/db.artskills.sql', // mysqldump --opt -d -p artskills > db.artskills.sql && mysqldump --opt -d -p artskills phinxlog >> db.artskills.sql
+			'testCommand' => 'app/Vendor/phpunit.phar --bootstrap app/webroot/test.php --no-configuration app/Test/Case', // относительно корня папки
 			'database' => [
-				'name' => 'artskills',
-				'login' => 'dblogin',
-				'password' => 'dbpassword',
+				'name' => 'artskills_structure',
+				'login' => 'artskills',
+				'password' => '6Edk7EhZc',
 			],
 		],
 	],
