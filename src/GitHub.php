@@ -52,6 +52,7 @@ class GitHub
 		curl_setopt($git, CURLOPT_TIMEOUT, self::REQUEST_TIMEOUT);
 		curl_setopt($git, CURLOPT_POST, true);
 		curl_setopt($git, CURLOPT_POSTFIELDS, json_encode($data));
+		curl_setopt($git, CURLOPT_RETURNTRANSFER, true);
 		return json_decode(curl_exec($git), true);
 	}
 

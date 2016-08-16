@@ -26,6 +26,8 @@ class Model extends PDO
 	public function __construct($config) {
 		$this->_config = $config;
 		parent::__construct('mysql:host=' . self::DEFAULT_HOST . ';dbname=' . $config['name'], $config['login'], $config['password']);
+
+		$this->prepare('SET FOREIGN_KEY_CHECKS = 0')->execute();
 	}
 
 	/**
@@ -41,17 +43,30 @@ class Model extends PDO
 			$catCmd = 'cat';
 		}
 
-		$cmd = $catCmd . ' "' . $file . '" | mysql -D' . $this->_config['name'] . ' -u' . $this->_config['login'] . ' -p' . $this->_config['password'];
-		return exec($cmd);
+		$configFile = __DIR__.'/../tmp/'.$this->_config['name'].'.cnf';
+		file_put_contents($configFile, "[mysql]\n".
+			"user=".$this->_config['login']."\n".
+			"password=".$this->_config['password']."\n".
+			"database=".$this->_config['name']."\n");
+
+		$cmd = $catCmd . ' "' . $file . '" | mysql --defaults-file="'.$configFile.'"';
+		$resultStrings = System::execute($cmd);
+		unlink($configFile);
+		return $resultStrings;
 	}
 
 	/**
 	 * Удаляем все таблицы из текущей БД
 	 */
 	public function dropAllTables() {
-		$dropOldTablesSql = str_replace('DROP_DB_NAME', $this->_config['name'], file_get_contents(__DIR__ . '/sql/dropAllTables.sql'));
-		$dropOldTablesFile = __DIR__.'/../tmp/dropAllTables-'.$this->_config['name'].'.sql';
-		file_put_contents($dropOldTablesFile, $dropOldTablesSql);
-		$this->executeSqlFile($dropOldTablesFile);
+		$tablesQ = $this->prepare('SELECT table_name FROM information_schema.tables WHERE table_schema = :current_db');
+		$tablesQ->execute([
+				':current_db' => $this->_config['name']
+			]);
+
+		while ($tableInfo = $tablesQ->fetch()) {
+			$this->prepare('DROP TABLE `'.$tableInfo['table_name'].'`')
+				->execute();
+		}
 	}
 }
