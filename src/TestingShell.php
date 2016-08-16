@@ -5,7 +5,7 @@ namespace ArtSkills\TestRunner;
 class TestingShell extends CallableEntity
 {
 	const SUCCESS_PHINX_REGEXP = '/All\sDone\.\sTook\s([0-9\.]+)s/';
-	const SUCCESS_PHPUNIT_REGEXP = '/OK\s\(([0-9]+)\stests\,\s([0-9]+)\sassertions\s)/';
+	const SUCCESS_PHPUNIT_REGEXP = '/OK\s\(([0-9]+)\stests\,\s([0-9]+)\sassertions\)/';
 
 	/**
 	 * Запуск юнит тестов
@@ -44,7 +44,7 @@ class TestingShell extends CallableEntity
 
 			$branchName = $testInfo['repository'] . '/' . $testInfo['ref'];
 
-			$this->_model->prepare('INSERT INTO history (branch, content) VALUES (:branch, :content, :elapsed_seconds)')
+			$this->_model->prepare('INSERT INTO history (branch, content, elapsed_seconds) VALUES (:branch, :content, :elapsed_seconds)')
 				->execute([
 					':branch' => $branchName,
 					':content' => $testDescription,
