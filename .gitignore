@@ -1,4 +1,7 @@
-.idea
-composer.phar
-/vendor/
+/.idea/*
+/vendor/*
+/config/app.php
+/tmp/*
+/logs/*
+/composer.phar
 /composer.lock
