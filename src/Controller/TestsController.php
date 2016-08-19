@@ -20,12 +20,26 @@ class TestsController extends AppController
 {
 	const PUSH_QUEUE_MESSAGE = 'в очередь!';
 
+	const MSG_ADD_BAD_ARGS = 'Bad args';
+	const MSG_ADD_BAD_SECRET = 'Bad secret';
+	const MSG_ADD_BAD_REPO = 'Not configured repository';
+	const MSG_ADD_BAD_ACTION = 'Incorrect action';
+
+	const GITHUB_SECRET_HEADER = 'X-Hub-Signature';
+
+	/**
+	 * GitHub
+	 * @var null|GitHub
+	 */
+	private $_gitHub = null;
+
 	/**
 	 * @inheritdoc
 	 */
 	public function initialize() {
 		parent::initialize();
 		$this->loadComponent('RequestHandler');
+		$this->_gitHub = new GitHub(Configure::read('gitToken'));
 	}
 
 	/**
@@ -40,7 +54,13 @@ class TestsController extends AppController
 	 */
 	public function add() {
 		if (empty($this->request->data['payload'])) {
-			return $this->_sendJsonError('Bad args');
+			return $this->_sendJsonError(self::MSG_ADD_BAD_ARGS);
+		}
+
+
+		$gitHeader = $this->request->header(self::GITHUB_SECRET_HEADER);
+		if (!$gitHeader || !$this->_gitHub->checkSecret($this->request->header(self::GITHUB_SECRET_HEADER), file_get_contents('php://input'), Configure::read('gitSecret'))) {
+			return $this->_sendJsonError(self::MSG_ADD_BAD_SECRET);
 		}
 
 		$payLoad = json_decode($this->request->data['payload'], true);
@@ -49,10 +69,10 @@ class TestsController extends AppController
 			if (isset(Configure::read('repositories')[$payLoad['pull_request']['base']['repo']['full_name']])) {
 				return $this->_sendJsonOk(['id' => $this->_processPullRequest($payLoad['pull_request'])]);
 			} else {
-				return $this->_sendJsonError('Not configured repository');
+				return $this->_sendJsonError(self::MSG_ADD_BAD_REPO);
 			}
 		} else {
-			return $this->_sendJsonError('Incorrect action');
+			return $this->_sendJsonError(self::MSG_ADD_BAD_ACTION);
 		}
 	}
 
@@ -75,7 +95,7 @@ class TestsController extends AppController
 			'status' => PhpTestsTable::STATUS_NEW,
 		]);
 
-		$gitHub = new GitHub(Configure::read('gitToken'));
+		$gitHub = $this->_gitHub;
 		$gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
 		return $newRec->id;
 	}

@@ -76,4 +76,29 @@ class GitHub
 
 		return $this->_doPostRequest('/repos/' . $repository . '/statuses/' . $sha, $toSend);
 	}
+
+	/**
+	 * Формируем Хеш ключ
+	 *
+	 * @param string $data
+	 * @param string $secret
+	 * @param string $algo
+	 * @return string
+	 */
+	public function buildSecret($data, $secret, $algo = 'sha1') {
+		return $algo.'='.hash_hmac($algo, $data, $secret);
+	}
+
+	/**
+	 * Проверка Хеша
+	 *
+	 * @param string $gitHeader X-Hub-Signature
+	 * @param string $rawPost file_get_contents('php://input')
+	 * @param string $secret
+	 * @return bool
+	 */
+	public function checkSecret($gitHeader, $rawPost, $secret) {
+		list($algo, $hash) = explode('=', $gitHeader, 2) + ['', ''];
+		return  $gitHeader === $this->buildSecret($rawPost, $secret, $algo);
+	}
 }

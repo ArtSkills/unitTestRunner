@@ -51,4 +51,18 @@ class GitHubTest extends AppTestCase
 		$gitHub = new GitHub('1');
 		self::assertEquals($testResult, $gitHub->changeCommitStatus($testRepository, $testSha, $testState, $testDescription));
 	}
+
+	/**
+	 * Формирование секретного ключа
+	 */
+	public function testSecret() {
+		$testSecret = '123';
+		$testData = 'data';
+		$expected = '4931e066f08c6a12b5a6aaeb4be339f7c2566c73';
+		$testAlgo = 'sha1=';
+		$gitHub = new GitHub('1');
+
+		self::assertEquals($testAlgo . $expected, $gitHub->buildSecret($testData, $testSecret));
+		self::assertTrue($gitHub->checkSecret($testAlgo . $expected, $testData, $testSecret));
+	}
 }
