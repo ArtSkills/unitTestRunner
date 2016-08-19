@@ -24,18 +24,4 @@ class Client extends \Cake\Http\Client
 
 		parent::__construct($config);
 	}
-
-	/**
-	 * @inheritdoc
-	 * Обернул в try/catch для, дабы чтобы код не валилися
-	 */
-	protected function _doRequest($method, $url, $data, $options) {
-		try {
-			$result = parent::_doRequest($method, $url, $data, $options);
-			return $result;
-		} catch (\Exception $error) {
-			Log::error($error->getMessage() . $error->getTraceAsString());
-			return false;
-		}
-	}
 }
