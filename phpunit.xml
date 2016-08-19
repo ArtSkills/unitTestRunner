@@ -21,10 +21,9 @@
 	<!-- Setup a listener for fixtures -->
 	<listeners>
 		<listener
-				class="\Cake\TestSuite\Fixture\FixtureInjector"
-				file="./vendor/cakephp/cakephp/src/TestSuite/Fixture/FixtureInjector.php">
+				class="App\Test\Fixture\FixtureInjector">
 			<arguments>
-				<object class="App\Test\FixtureManager"/>
+				<object class="App\Test\Fixture\FixtureManager"/>
 			</arguments>
 		</listener>
 	</listeners>

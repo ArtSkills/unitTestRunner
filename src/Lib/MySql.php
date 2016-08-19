@@ -34,8 +34,6 @@ class MySql
 			$connection->prepare('DROP TABLE `' . $tableInfo['table_name'] . '`')
 				->execute();
 		}
-
-		$connection->prepare('SET FOREIGN_KEY_CHECKS = 1')->execute();
 	}
 
 	/**

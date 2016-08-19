@@ -12,6 +12,11 @@ use Cake\Datasource\ConnectionManager;
 class MySqlTest extends AppTestCase
 {
 	/**
+	 * @inheritdoc
+	 */
+	public $fixtures = [];
+
+	/**
 	 * Удаление всех талиц
 	 */
 	public function testDropDbTables() {
@@ -49,5 +54,6 @@ class MySqlTest extends AppTestCase
 
 		$tableCount = $testConnection->query("SELECT COUNT(*) FROM `information_schema`.`tables` WHERE `table_schema` = '" . $curConfig['database'] . "' and `table_name` = '" . $testTableName . "'")->fetch();
 		self::assertEquals(1, $tableCount[0], 'Не исполнился файл на добавление');
+		MySql::dropDbTables($curConfig['host'], $curConfig['database'], $curConfig['username'], $curConfig['password']);
 	}
 }

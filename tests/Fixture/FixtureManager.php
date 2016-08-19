@@ -7,7 +7,7 @@
  * Time: 15:23
  */
 
-namespace App\Test;
+namespace App\Test\Fixture;
 
 use App\Test\Fixture\AppFixture;
 use Cake\Core\Configure;
