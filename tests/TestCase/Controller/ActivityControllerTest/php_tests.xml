@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resultset statement="SELECT * FROM test_runner.php_tests where id=7
+LIMIT 0, 1000
+"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<row>
+		<field name="id">7</field>
+		<field name="repository">ArtSkills/site</field>
+		<field name="ref">SITE-23</field>
+		<field name="sha">aa1f24c8fa64d99705c5f98f8d0c37d4a7c02610</field>
+		<field name="status">success</field>
+		<field name="created">2016-08-19 15:17:26</field>
+		<field name="updated">2016-08-22 08:44:55</field>
+	</row>
+</resultset>

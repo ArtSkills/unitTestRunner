@@ -55,7 +55,7 @@ class GitHub
 			]
 		]);
 
-		if ($result->getStatusCode() !== self::RESPONSE_OK) {
+		if ($result->getStatusCode() != self::RESPONSE_OK) {
 			Log::error('Bad GitHub response: '.print_r($result->json, true));
 		}
 		return $result->json;

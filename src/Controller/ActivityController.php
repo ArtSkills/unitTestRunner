@@ -14,6 +14,8 @@ use App\Model\Table\PhpTestActivityTable;
  */
 class ActivityController extends AppController
 {
+	const MSG_NOT_FOUND = 'Not found';
+
 	/**
 	 * @inheritdoc
 	 */
@@ -44,7 +46,7 @@ class ActivityController extends AppController
 			->contain('PhpTests')
 			->first();
 		if (!$activity) {
-			$this->_sendJsonError('Not found');
+			$this->_sendJsonError(self::MSG_NOT_FOUND);
 		} else {
 			$this->set(compact('activity'));
 		}
