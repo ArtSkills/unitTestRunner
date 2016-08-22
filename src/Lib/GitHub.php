@@ -1,6 +1,7 @@
 <?php
 namespace App\Lib;
 
+use Cake\Log\Log;
 use \Exception;
 
 class GitHub
@@ -13,6 +14,8 @@ class GitHub
 	const STATE_ERROR = 'error';
 
 	const DEFAULT_STATUS_CONTENT = 'Каратель говорит';
+
+	const RESPONSE_OK = 201;
 
 	/**
 	 * Токен доступа
@@ -44,13 +47,18 @@ class GitHub
 	 */
 	private function _doPostRequest($method, $data) {
 		$client = new Client();
-		return $client->post(self::POOL . $method, json_encode($data), [
+		$result = $client->post(self::POOL . $method, json_encode($data), [
 			'type' => 'json',
 			'headers' => [
 				'User-Agent' => 'UnitTestRunner',
 				'Authorization' => 'token ' . $this->_token
 			]
-		])->json;
+		]);
+
+		if ($result->getStatusCode() !== self::RESPONSE_OK) {
+			Log::error('Bad GitHub response: '.print_r($result->json, true));
+		}
+		return $result->json;
 	}
 
 	/**

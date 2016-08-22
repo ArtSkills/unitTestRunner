@@ -52,7 +52,9 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
 
 	$routes->extensions(['json']);
-	$routes->resources('Tests');
+	$routes->resources('Tests', function (RouteBuilder $routes) {
+		$routes->resources('Activity');
+	});
 
     /**
      * Connect catchall routes for all controllers.

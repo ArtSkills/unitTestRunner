@@ -14,4 +14,11 @@ class PhpTestsTable extends AppTable
 	const STATUS_NEW = 'new';
 	const STATUS_PROCESSING = 'processing';
 	const STATUS_FINISHED = 'success';
+
+	/**
+	 * @inheritdoc
+	 */
+	public function initialize(array $config) {
+		$this->hasMany('PhpTestActivity');
+	}
 }

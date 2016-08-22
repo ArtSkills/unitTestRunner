@@ -11,5 +11,10 @@ namespace App\Model\Table;
 
 class PhpTestActivityTable extends AppTable
 {
-
+	/**
+	 * @inheritdoc
+	 */
+	public function initialize(array $config) {
+		$this->belongsTo('PhpTests');
+	}
 }

@@ -98,13 +98,14 @@ class PhpTestsShell extends Shell
 
 		$fillStartTime = microtime(true);
 		$fillStrings = MySql::executeSqlFile($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['structureFile']);
-		$resultArr[] = $this->_formatReport('Fill database structure', '<pre>' . $fillStrings . '</pre>', $fillStartTime);
+		$resultArr[] = $this->_formatReport('Fill database structure', (strlen($fillStrings) ? '<pre>' . $fillStrings . '</pre>' : ''), $fillStartTime);
 
 		$result = false;
+
 		if (!strlen($fillStrings)) {
 			$migrationStartTime = microtime(true);
 			$migrationsLog = System::execute($repositoryConfig['phinxCommand'], $repositoryConfig['repositoryLocation']);
-			$resultArr[] = $this->_formatReport('Run migrations', '<pre>' . $migrationsLog . '</pre>', $migrationStartTime);
+			$resultArr[] = $this->_formatReport('Run migrations', nl2br($migrationsLog), $migrationStartTime);
 
 			if (preg_match(self::SUCCESS_PHINX_REGEXP, $migrationsLog)) {
 				$phpUnitStartTime = microtime(true);
@@ -122,7 +123,7 @@ class PhpTestsShell extends Shell
 		return [
 			'success' => $result,
 			'elapsedSeconds' => $elapsedSeconds,
-			'activity' => $resultArr
+			'activity' => $resultArr,
 		];
 	}
 
