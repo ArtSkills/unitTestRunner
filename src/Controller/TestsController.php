@@ -27,6 +27,8 @@ class TestsController extends AppController
 
 	const GITHUB_SECRET_HEADER = 'X-Hub-Signature';
 
+	const GITHUB_ADD_STATUSES = ['reopened', 'opened', 'synchronize'];
+
 	/**
 	 * GitHub
 	 * @var null|GitHub
@@ -65,7 +67,7 @@ class TestsController extends AppController
 
 		$payLoad = json_decode($this->request->data['payload'], true);
 
-		if (!empty($payLoad['action']) && in_array($payLoad['action'], ['reopened', 'opened'])) {
+		if (!empty($payLoad['action']) && in_array($payLoad['action'], self::GITHUB_ADD_STATUSES)) {
 			if (isset(Configure::read('repositories')[$payLoad['pull_request']['base']['repo']['full_name']])) {
 				return $this->_sendJsonOk(['id' => $this->_processPullRequest($payLoad['pull_request'])]);
 			} else {
