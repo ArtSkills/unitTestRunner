@@ -24,6 +24,8 @@ class TestsController extends AppController
 	const MSG_ADD_BAD_SECRET = 'Bad secret';
 	const MSG_ADD_BAD_REPO = 'Not configured repository';
 	const MSG_ADD_BAD_ACTION = 'Incorrect action';
+	const MSG_EDIT_NOT_FOUND = 'Not found';
+	const MSG_EDIT_BAD_STATUS = 'Bad status';
 
 	const GITHUB_SECRET_HEADER = 'X-Hub-Signature';
 
@@ -31,6 +33,7 @@ class TestsController extends AppController
 
 	/**
 	 * GitHub
+	 *
 	 * @var null|GitHub
 	 */
 	private $_gitHub = null;
@@ -42,6 +45,7 @@ class TestsController extends AppController
 		parent::initialize();
 		$this->loadComponent('RequestHandler');
 		$this->_gitHub = new GitHub(Configure::read('gitToken'));
+		$this->loadModel('PhpTests');
 	}
 
 	/**
@@ -85,8 +89,6 @@ class TestsController extends AppController
 	 * @return int
 	 */
 	private function _processPullRequest($pullRequest) {
-		$this->loadModel('PhpTests');
-
 		$repository = $pullRequest['base']['repo']['full_name'];
 		$sha = $pullRequest['head']['sha'];
 
@@ -112,12 +114,39 @@ class TestsController extends AppController
 	}
 
 	/**
-	 * Редактирование теста
+	 * Перезапуск теста.
+	 * Параметры:
+	 * 	rerun_test = 1
+	 * 	redirect = 1 в случае необходимости редиректа, а не JSON ответа
 	 *
-	 * @param string $id
+	 * @param string $testId
+	 * @return NULL
 	 */
-	public function edit($id) {
-		$this->_sendJsonError('Not realized');
+	public function edit($testId) {
+		if (!isset($this->request->data['rerun_test'])) {
+			return $this->_sendJsonError(self::MSG_ADD_BAD_ARGS);
+		}
+
+		$curTest = $this->PhpTests->find()
+			->where(['id' => $testId])
+			->first();
+
+		if (!$curTest) {
+			return $this->_sendJsonError(self::MSG_EDIT_NOT_FOUND);
+		}
+		if ($curTest->status !== PhpTestsTable::STATUS_FINISHED) {
+			return $this->_sendJsonError(self::MSG_EDIT_BAD_STATUS);
+		}
+
+		$this->PhpTests->patchEntity($curTest, ['status' => PhpTestsTable::STATUS_NEW]);
+		$this->_gitHub->changeCommitStatus($curTest->repository, $curTest->sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
+		$this->PhpTests->save($curTest);
+
+		if (!empty($this->request->data['redirect'])) {
+			return $this->redirect('https://github.com/' . $curTest->repository . '/pulls');
+		} else {
+			return $this->_sendJsonOk(['id' => $curTest->id]);
+		}
 	}
 
 	/**

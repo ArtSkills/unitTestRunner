@@ -27,4 +27,12 @@ $this->assign('title', $title);
 			</div>
 		</div>
 	<?php } ?>
+
+	<div>
+		<?= $this->Form->create(null, ['type' => 'put', 'url' => '/tests/edit/' . $activity->php_test->id]); ?>
+		<?= $this->Form->hidden('rerun_test', ['value' => 1]); ?>
+		<?= $this->Form->hidden('redirect', ['value' => 1]); ?>
+		<?= $this->Form->submit('Выполнить тест заново', ['class' => 'btn btn-warning']); ?>
+		<?= $this->Form->end(); ?>
+	</div>
 </div>

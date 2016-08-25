@@ -79,7 +79,55 @@ class TestsControllerTest extends AppControllerTestCase
 		$gitHub = new GitHub('1');
 
 		$this->_request['headers'] = [
-			TestsController::GITHUB_SECRET_HEADER => $gitHub->buildSecret(file_get_contents('php://input'), Configure::read('gitSecret'))
+			TestsController::GITHUB_SECRET_HEADER => $gitHub->buildSecret(file_get_contents('php://input'), Configure::read('gitSecret')),
 		];
+	}
+
+	/**
+	 * Правка с некорректными данными
+	 */
+	public function testEditBadData() {
+		$this->put('/tests/1', ['1' => '2']);
+		$this->assertJsonErrorEquals(TestsController::MSG_ADD_BAD_ARGS, $this->_response->body());
+
+		$this->put('/tests/1', ['rerun_test' => 'true']);
+		$this->assertJsonErrorEquals(TestsController::MSG_EDIT_NOT_FOUND, $this->_response->body());
+
+		$testId = 31;
+		$phpTests = PhpTestsTable::instance();
+		$phpTests->updateAll(['status' => PhpTestsTable::STATUS_NEW], ['id' => $testId]);
+		$this->put('/tests/' . $testId, ['rerun_test' => 'true']);
+		$this->assertJsonErrorEquals(TestsController::MSG_EDIT_BAD_STATUS, $this->_response->body());
+	}
+
+	/**
+	 * Правка с JSON ответом
+	 */
+	public function testEdit() {
+		$testId = 31;
+		$phpTests = PhpTestsTable::instance();
+		$toUpdateTest = $phpTests->find()->where(['id' => $testId])->first();
+
+		MethodMocker::mock(GitHub::class, 'changeCommitStatus')
+			->expectArgs($toUpdateTest->repository, $toUpdateTest->sha, GitHub::STATE_PROCESSING, TestsController::PUSH_QUEUE_MESSAGE)
+			->singleCall();
+
+		$this->put('/tests/' . $testId, ['rerun_test' => '1']);
+		$this->assertJsonOKEquals(['id' => $testId]);
+
+		$updatedTest = $phpTests->find()->where(['id' => $testId])->first();
+		self::assertEquals(PhpTestsTable::STATUS_NEW, $updatedTest->status);
+	}
+
+	/**
+	 * Правка с редиректом
+	 */
+	public function testEditRedirect() {
+		MethodMocker::mock(GitHub::class, 'changeCommitStatus')
+			->singleCall();
+
+		$testId = 31;
+		$this->put('/tests/' . $testId, ['rerun_test' => '1', 'redirect' => 1]);
+		$this->assertRedirect('https://github.com/ArtSkills/crm/pulls');
 	}
 }
