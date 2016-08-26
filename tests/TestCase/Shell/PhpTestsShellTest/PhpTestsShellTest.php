@@ -197,6 +197,7 @@ class PhpTestsShellTest extends AppTestCase
 			'name' => 'artskills_structure',
 			'login' => 'artskills',
 			'password' => 'pwd',
+			'port' => '3307',
 		],
 	];
 
@@ -308,10 +309,10 @@ class PhpTestsShellTest extends AppTestCase
 
 		MethodMocker::mock(MySql::class, 'dropDbTables')
 			->expectCall(2)
-			->expectArgs($this->_repository['database']['host'], $this->_repository['database']['name'], $this->_repository['database']['login'], $this->_repository['database']['password']);
+			->expectArgs($this->_repository['database']['host'], $this->_repository['database']['name'], $this->_repository['database']['login'], $this->_repository['database']['password'], $this->_repository['database']['port']);
 
 		MethodMocker::mock(MySql::class, 'executeSqlFile')
-			->expectArgs($this->_repository['database']['host'], $this->_repository['database']['name'], $this->_repository['database']['login'], $this->_repository['database']['password'], $this->_repository['structureFile'])
+			->expectArgs($this->_repository['database']['host'], $this->_repository['database']['name'], $this->_repository['database']['login'], $this->_repository['database']['password'], $this->_repository['database']['port'], $this->_repository['structureFile'])
 			->willReturnValue($importStructResult);
 	}
 }

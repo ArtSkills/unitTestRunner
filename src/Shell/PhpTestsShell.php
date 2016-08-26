@@ -94,12 +94,11 @@ class PhpTestsShell extends Shell
 		$git->pullCurrentBranch();
 		$resultArr[] = $this->_formatReport('Checkout to branch ' . $repositoryConfig['repositoryLocation'], '', $checkoutStartTime);
 
-		MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password']);
+		MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port']);
 
 		$fillStartTime = microtime(true);
-		$fillStrings = MySql::executeSqlFile($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['structureFile']);
+		$fillStrings = MySql::executeSqlFile($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port'], $repositoryConfig['structureFile']);
 		$resultArr[] = $this->_formatReport('Fill database structure', (strlen($fillStrings) ? '<pre>' . $fillStrings . '</pre>' : ''), $fillStartTime);
-
 		$result = false;
 
 		if (!strlen($fillStrings)) {
@@ -117,7 +116,7 @@ class PhpTestsShell extends Shell
 			}
 		}
 
-		MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password']);
+		MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port']);
 
 		$elapsedSeconds = microtime(true) - $testStartTime;
 		return [

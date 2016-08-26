@@ -28,7 +28,7 @@ class MySqlTest extends AppTestCase
 		$testConnection->query('create table test1 (id INT(10));');
 		$testConnection->query('create table test2 (id INT(10));');
 
-		MySql::dropDbTables($curConfig['host'], $curConfig['database'], $curConfig['username'], $curConfig['password']);
+		MySql::dropDbTables($curConfig['host'], $curConfig['database'], $curConfig['username'], $curConfig['password'], $curConfig['port']);
 		$tableCount = $testConnection->query("SELECT COUNT(*) FROM `information_schema`.`tables` WHERE `table_schema` = '" . $curConfig['database'] . "'")->fetch();
 		self::assertEquals(0, $tableCount[0], 'Не удалились таблицы');
 	}
@@ -39,7 +39,7 @@ class MySqlTest extends AppTestCase
 	 * @expectedException \Exception
 	 */
 	public function testExecuteSqlFileBadPath() {
-		MySql::executeSqlFile('1', '2', '3', '4', '5');
+		MySql::executeSqlFile('1', '2', '3', '4', '5', '6');
 	}
 
 	/**
@@ -49,11 +49,11 @@ class MySqlTest extends AppTestCase
 		$testTableName = 'catalog_cache';
 		$testConnection = ConnectionManager::get('test');
 		$curConfig = $testConnection->config();
-		self::assertEmpty(MySql::executeSqlFile($curConfig['host'], $curConfig['database'], $curConfig['username'], $curConfig['password'], __DIR__ . '/insert.sql'), 'MySQL вернул что-то плохое');
+		self::assertEmpty(MySql::executeSqlFile($curConfig['host'], $curConfig['database'], $curConfig['username'], $curConfig['password'], $curConfig['port'], __DIR__ . '/insert.sql'), 'MySQL вернул что-то плохое');
 
 
 		$tableCount = $testConnection->query("SELECT COUNT(*) FROM `information_schema`.`tables` WHERE `table_schema` = '" . $curConfig['database'] . "' and `table_name` = '" . $testTableName . "'")->fetch();
 		self::assertEquals(1, $tableCount[0], 'Не исполнился файл на добавление');
-		MySql::dropDbTables($curConfig['host'], $curConfig['database'], $curConfig['username'], $curConfig['password']);
+		MySql::dropDbTables($curConfig['host'], $curConfig['database'], $curConfig['username'], $curConfig['password'], $curConfig['port']);
 	}
 }

@@ -20,9 +20,10 @@ class MySql
 	 * @param string $dbName
 	 * @param string $dbLogin
 	 * @param string $dbPassword
+	 * @param string $dbPort
 	 */
-	public static function dropDbTables($dbHost, $dbName, $dbLogin, $dbPassword) {
-		$connection = new PDO('mysql:host=' . $dbHost . ';dbname=' . $dbName, $dbLogin, $dbPassword);
+	public static function dropDbTables($dbHost, $dbName, $dbLogin, $dbPassword, $dbPort = 3306) {
+		$connection = new PDO('mysql:host=' . $dbHost . ';dbname=' . $dbName . ';port=' . $dbPort, $dbLogin, $dbPassword);
 		$connection->prepare('SET FOREIGN_KEY_CHECKS = 0')->execute();
 
 		$tablesQ = $connection->prepare('SELECT `table_name` FROM information_schema.tables WHERE table_schema = :current_db');
@@ -43,11 +44,12 @@ class MySql
 	 * @param string $dbName
 	 * @param string $dbLogin
 	 * @param string $dbPassword
+	 * @param string $dbPort
 	 * @param string $sqlFile
 	 * @return string пустая строка, если всё ок, в противном случае содержимое ошибки
 	 * @throws Exception
 	 */
-	public static function executeSqlFile($dbHost, $dbName, $dbLogin, $dbPassword, $sqlFile) {
+	public static function executeSqlFile($dbHost, $dbName, $dbLogin, $dbPassword, $dbPort, $sqlFile) {
 		if (!is_file($sqlFile)) {
 			throw new Exception('File "' . $sqlFile . '" not exists!');
 		}
@@ -62,6 +64,7 @@ class MySql
 		file_put_contents($configFile, "[mysql]\n" .
 			"host=" . $dbHost . "\n" .
 			"user=" . $dbLogin . "\n" .
+			"port=" . $dbPort . "\n" .
 			"password=" . $dbPassword . "\n" .
 			"database=" . $dbName . "\n");
 
