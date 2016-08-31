@@ -16,6 +16,7 @@ php install.php
 			'structureFile' => 'дамп структуры тестовой база с исторей phinx миграций (phinxlog)', // mysqldump --opt -d -p artskills > db.artskills.sql && mysqldump --opt -d -p artskills phinxlog >> db.artskills.sql
 			'phpUnitCommand' => 'команда запуска phpUnit относительно папки repositoryLocation',
 			'phinxCommand' => 'команда запуска phinx относительно папки repositoryLocation',
+			'composerUpdateCommand' => 'php composer.phar update',
 			'database' => [
 				'host' => 'хост',
 				'name' => 'база тестируемого репозитория со структурой',

@@ -102,6 +102,8 @@ class PhpTestsShell extends Shell
 		$result = false;
 
 		if (!strlen($fillStrings)) {
+			$resultArr[] = $this->_formatReport('Run composer', System::execute($repositoryConfig['composerUpdateCommand'], $repositoryConfig['repositoryLocation']), microtime(true));
+
 			$migrationStartTime = microtime(true);
 			$migrationsLog = System::execute($repositoryConfig['phinxCommand'], $repositoryConfig['repositoryLocation']);
 			$resultArr[] = $this->_formatReport('Run migrations', nl2br($migrationsLog), $migrationStartTime);

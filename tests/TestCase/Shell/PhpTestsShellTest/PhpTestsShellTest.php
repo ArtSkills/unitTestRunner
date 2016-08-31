@@ -192,6 +192,7 @@ class PhpTestsShellTest extends AppTestCase
 		'phpUnitCommand' => 'app/Vendor/phpunit.phar --bootstrap app/webroot/test.php --no-configuration app/Test/Case',
 		// относительно корня папки
 		'phinxCommand' => 'vendor/bin/phinx migrate',
+		'composerUpdateCommand' => 'php composer.phar update',
 		'database' => [
 			'host' => 'localhost',
 			'name' => 'artskills_structure',
@@ -209,6 +210,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$executeResults = [
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'All Done. Took 1s'],
 			['cmd' => $this->_repository['phpUnitCommand'], 'result' => 'OK (4 tests, 18 assertions)'],
 		];
@@ -231,6 +233,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$executeResults = [
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'Bad result'],
 		];
 
@@ -268,6 +271,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$executeResults = [
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'All Done. Took 1s'],
 			['cmd' => $this->_repository['phpUnitCommand'], 'result' => 'Fail'],
 		];
