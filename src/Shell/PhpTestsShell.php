@@ -90,6 +90,7 @@ class PhpTestsShell extends Shell
 
 		$checkoutStartTime = microtime(true);
 		$git = new Git($repositoryConfig['deployKey'], $repositoryConfig['repositoryLocation']);
+		$git->updateRefs();
 		$git->checkout($ref);
 		$git->pullCurrentBranch();
 		$resultArr[] = $this->_formatReport('Checkout to branch ' . $repositoryConfig['repositoryLocation'], '', $checkoutStartTime);
