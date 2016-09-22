@@ -210,6 +210,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$executeResults = [
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'OK'],
 			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'All Done. Took 1s'],
 			['cmd' => $this->_repository['phpUnitCommand'], 'result' => 'OK (4 tests, 18 assertions)'],
@@ -233,6 +234,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$executeResults = [
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'OK'],
 			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'Bad result'],
 		];
@@ -253,6 +255,7 @@ class PhpTestsShellTest extends AppTestCase
 		$testBranch = 'SITE-23';
 		$executeResults = [
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'OK'],
 		];
 
 		$this->_makeDoDestMocks($testBranch, $executeResults, 'Import error!!!');
@@ -271,6 +274,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$executeResults = [
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'OK'],
 			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'All Done. Took 1s'],
 			['cmd' => $this->_repository['phpUnitCommand'], 'result' => 'Fail'],
