@@ -23,7 +23,7 @@ class PhpTestsShell extends Shell
 
 	const SUCCESS_PHINX_REGEXP = '/All\sDone\.\sTook\s([0-9\.]+)s/';
 	const SUCCESS_PHPUNIT_REGEXP = '/OK\s\(([0-9]+)\stests\,\s([0-9]+)\sassertions\)/';
-	const PHP_WARNING_REGEXP = '/Warning\s\(([0-9]+)\)/';
+	const PHP_WARNING_STRING = 'cake-error';
 
 	/**
 	 * Запуск PHP тестов
@@ -113,7 +113,7 @@ class PhpTestsShell extends Shell
 			if (preg_match(self::SUCCESS_PHINX_REGEXP, $migrationsLog)) {
 				$phpUnitStartTime = microtime(true);
 				$unitTestLog = System::execute($repositoryConfig['phpUnitCommand'], $repositoryConfig['repositoryLocation']);
-				if (preg_match(self::SUCCESS_PHPUNIT_REGEXP, $unitTestLog) && !preg_match(self::PHP_WARNING_REGEXP, $unitTestLog)) {
+				if (preg_match(self::SUCCESS_PHPUNIT_REGEXP, $unitTestLog) && !stristr($unitTestLog, self::PHP_WARNING_STRING)) {
 					$result = true;
 				}
 				$resultArr[] = $this->_formatReport('Run PhpUnit', nl2br($unitTestLog), $phpUnitStartTime);
