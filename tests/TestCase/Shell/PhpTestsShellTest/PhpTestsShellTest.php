@@ -277,7 +277,7 @@ class PhpTestsShellTest extends AppTestCase
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'OK'],
 			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'All Done. Took 1s'],
-			['cmd' => $this->_repository['phpUnitCommand'], 'result' => 'Fail'],
+			['cmd' => $this->_repository['phpUnitCommand'], 'result' => "Warning (2): mkdir(): No such file or directory [APP/Console/Command/SyncOrdersShell.php, line 251]\nOK (4 tests, 18 assertions)"],
 		];
 
 		$this->_makeDoDestMocks($testBranch, $executeResults);
