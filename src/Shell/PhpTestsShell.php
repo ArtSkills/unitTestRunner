@@ -65,9 +65,10 @@ class PhpTestsShell extends Shell
 		}
 
 		$this->loadModel('PhpTestActivity');
+
 		$historyRec = $this->PhpTestActivity->saveArr([
 			'php_test_id' => $phpTest->id,
-			'content' => json_encode($result['activity']),
+			'content' => json_encode($result['activity'], JSON_PARTIAL_OUTPUT_ON_ERROR),
 			'elapsed_seconds' => $result['elapsedSeconds'],
 		]);
 
