@@ -142,7 +142,7 @@ class PhpTestsShell extends Shell
 	private function _formatReport($header, $text, $timeStart) {
 		return [
 			'header' => $header,
-			'report' => $text,
+			'report' => iconv("UTF-8", "UTF-8//IGNORE", $text),
 			'elapsedTime' => microtime(true) - $timeStart,
 		];
 	}
