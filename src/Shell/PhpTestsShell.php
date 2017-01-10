@@ -110,7 +110,7 @@ class PhpTestsShell extends Shell
 			$resultArr[] = $this->_formatReport('Fill database structure', (strlen($fillStrings) ? '<pre>' . $fillStrings . '</pre>' : ''), $fillStartTime);
 
 			if (!strlen($fillStrings)) {
-				$resultArr[] = $this->_formatReport('Run composer', System::execute($this->_getCmd($repositoryConfig['composerUpdateCommand']), $this->_getWorkDir($repositoryConfig['composerUpdateCommand'], $repositoryConfig)), microtime(true));
+				$resultArr[] = $this->_formatReport('Run composer', nl2br(System::execute($this->_getCmd($repositoryConfig['composerUpdateCommand']), $this->_getWorkDir($repositoryConfig['composerUpdateCommand'], $repositoryConfig))), microtime(true));
 
 				$migrationStartTime = microtime(true);
 				$migrationsLog = System::execute($this->_getCmd($repositoryConfig['phinxCommand']), $this->_getWorkDir($repositoryConfig['phinxCommand'], $repositoryConfig));
