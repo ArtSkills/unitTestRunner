@@ -99,7 +99,7 @@ class PhpTestsShell extends Shell
 		if ($successCheckout) {
 			$git->pullCurrentBranch($pullOutput);
 		}
-		$resultArr[] = $this->_formatReport('Checkout to branch ' . $repositoryConfig['repositoryLocation'], $gitOutput . "\n" . $pullOutput, $checkoutStartTime);
+		$resultArr[] = $this->_formatReport('Checkout to branch ' . $repositoryConfig['repositoryLocation'], nl2br($gitOutput . "\n" . $pullOutput), $checkoutStartTime);
 
 		$result = false;
 		if ($successCheckout) {
