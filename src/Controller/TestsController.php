@@ -91,17 +91,29 @@ class TestsController extends AppController
 	private function _processPullRequest($pullRequest) {
 		$repository = $pullRequest['base']['repo']['full_name'];
 		$sha = $pullRequest['head']['sha'];
+		$ref = $pullRequest['head']['ref'];
 
-		$newRec = $this->PhpTests->saveArr([
-			'repository' => $repository,
-			'ref' => $pullRequest['head']['ref'],
-			'sha' => $sha,
-			'status' => PhpTestsTable::STATUS_NEW,
-		]);
+		$existingTest = $this->PhpTests->find()
+			->where([
+				'repository' => $repository,
+				'ref' => $ref,
+				'status' => PhpTestsTable::STATUS_NEW,
+			])->first();
 
-		$gitHub = $this->_gitHub;
-		$gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
-		return $newRec->id;
+		if ($existingTest) {
+			return $existingTest->id;
+		} else {
+			$newRec = $this->PhpTests->saveArr([
+				'repository' => $repository,
+				'ref' => $ref,
+				'sha' => $sha,
+				'status' => PhpTestsTable::STATUS_NEW,
+			]);
+
+			$gitHub = $this->_gitHub;
+			$gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
+			return $newRec->id;
+		}
 	}
 
 	/**
@@ -116,8 +128,8 @@ class TestsController extends AppController
 	/**
 	 * Перезапуск теста.
 	 * Параметры:
-	 * 	rerun_test = 1
-	 * 	redirect = 1 в случае необходимости редиректа, а не JSON ответа
+	 *    rerun_test = 1
+	 *    redirect = 1 в случае необходимости редиректа, а не JSON ответа
 	 *
 	 * @param string $testId
 	 * @return NULL

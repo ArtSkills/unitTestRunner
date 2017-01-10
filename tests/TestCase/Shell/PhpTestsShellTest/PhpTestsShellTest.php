@@ -299,10 +299,12 @@ class PhpTestsShellTest extends AppTestCase
 	private function _makeDoDestMocks($testBranch, $executeResults, $importStructResult = '') {
 		MethodMocker::mock(Git::class, 'checkout')
 			->expectArgs($testBranch)
-			->singleCall();
+			->singleCall()
+			->willReturnValue(true);
 
 		MethodMocker::mock(Git::class, 'pullCurrentBranch')
-			->singleCall();
+			->singleCall()
+			->willReturnValue(true);
 
 
 		$executeIndex = 0;

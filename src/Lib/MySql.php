@@ -20,7 +20,7 @@ class MySql
 	 * @param string $dbName
 	 * @param string $dbLogin
 	 * @param string $dbPassword
-	 * @param string $dbPort
+	 * @param int $dbPort
 	 */
 	public static function dropDbTables($dbHost, $dbName, $dbLogin, $dbPassword, $dbPort = 3306) {
 		$connection = new PDO('mysql:host=' . $dbHost . ';dbname=' . $dbName . ';port=' . $dbPort, $dbLogin, $dbPassword);

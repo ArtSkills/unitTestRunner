@@ -62,20 +62,17 @@ class Git
 	 */
 	public function __construct($deployKey, $repositoryDir) {
 		if (!file_exists($deployKey)) {
-			throw new \Exception('File "'.$deployKey.'" not exists!');
+			throw new \Exception('File "' . $deployKey . '" not exists!');
 		}
 		if (!is_dir($repositoryDir)) {
-			throw new \Exception('Directory "'.$repositoryDir.'" not exists!');
+			throw new \Exception('Directory "' . $repositoryDir . '" not exists!');
 		}
 
-		$this->_gitCommand = self::GIT_COMMAND_TEST .' -i '.$deployKey;
+		$this->_gitCommand = self::GIT_COMMAND_TEST . ' -i ' . $deployKey;
 		$this->_repositoryDir = $repositoryDir;
 
 		if (!empty($this->_gitCommand)) {
-			$result = $this->_execute($this->_gitCommand . ' rev-parse --abbrev-ref HEAD');
-			if (!empty($result)) {
-				$this->_currentBranch = $result[0];
-			}
+			$this->_currentBranch = $this->_getCurrentBranch();
 		}
 	}
 
@@ -108,32 +105,44 @@ class Git
 	 * Смена активной ветки
 	 *
 	 * @param string $name
+	 * @param string $gitOutput
 	 * @return bool
 	 */
-	public function checkout($name) {
+	public function checkout($name, &$gitOutput = null) {
+		$gitOutput = '';
 		if ($this->_currentBranch == $name) {
 			return true;
 		}
 		if (empty($this->_currentBranch) || !in_array($name, $this->getBranchList(self::BRANCH_TYPE_ALL))) {
 			return false;
 		}
-		return $this->_checkout($name);
+		return $this->_checkout($name, $gitOutput);
 	}
 
 	/**
 	 * Для внутреннего пользования, без проверок
 	 *
 	 * @param string $name
+	 * @param string $gitOutput
 	 * @return bool
 	 */
-	private function _checkout($name) {
+	private function _checkout($name, &$gitOutput = null) {
 		if ($this->_currentBranch == $name) {
 			return true;
 		}
 		$command = $this->_gitCommand . ' checkout ' . $name;
-		$this->_execute($command);
-		$this->_currentBranch = $name;
-		return true;
+		$resultArr = $this->_execute($command);
+		if ($gitOutput !== null) {
+			$gitOutput = implode("\n", $resultArr);
+		}
+
+		$newBranch = $this->_getCurrentBranch();
+		if ($newBranch == $name) {
+			$this->_currentBranch = $name;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -165,15 +174,19 @@ class Git
 	/**
 	 * Делаем git pull для активной ветки
 	 *
+	 * @param string $gitOutput
 	 * @return bool
 	 */
-	public function pullCurrentBranch() {
+	public function pullCurrentBranch(&$gitOutput = null) {
 		if (empty($this->_currentBranch)) {
 			return false;
 		}
 
 		$cmd = $this->_gitCommand . ' pull';
-		$this->_execute($cmd);
+		$result = $this->_execute($cmd);
+		if ($gitOutput !== null) {
+			$gitOutput = implode("\n", $result);
+		}
 		return true;
 	}
 
@@ -292,5 +305,19 @@ class Git
 	 */
 	private function _execute($command) {
 		return System::execute($command, $this->_repositoryDir, false);
+	}
+
+	/**
+	 * Определяем имя текущей ветки
+	 *
+	 * @return string
+	 */
+	private function _getCurrentBranch() {
+		$result = $this->_execute($this->_gitCommand . ' rev-parse --abbrev-ref HEAD');
+		if (!empty($result)) {
+			return $result[0];
+		} else {
+			return '';
+		}
 	}
 }

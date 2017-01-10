@@ -61,15 +61,24 @@ class TestsControllerTest extends AppControllerTestCase
 		MethodMocker::mock(GitHub::class, 'changeCommitStatus')
 			->singleCall();
 
-		$this->post('/tests', ['payload' => file_get_contents(__DIR__ . '/pull_request.json')]);
+		$payload = file_get_contents(__DIR__ . '/pull_request.json');
+
+		$this->post('/tests', ['payload' => $payload]);
 
 		$phpTests = PhpTestsTable::instance();
+		$conditions = ['repository' => 'ArtSkills/site', 'ref' => 'selectFix', 'status' => PhpTestsTable::STATUS_NEW];
 		$newTest = $phpTests->find()
-			->where(['repository' => 'ArtSkills/site', 'ref' => 'selectFix', 'status' => PhpTestsTable::STATUS_NEW])
+			->where($conditions)
 			->first();
 
 		self::assertNotEmpty($newTest, 'Не добавилась запись в бд');
 		$this->assertJsonOKEquals(['id' => $newTest->id], 'Некорректный результат при добавлении записи');
+
+		// повторно добавили тот же запрос
+		$this->_setSecretHeader();
+		$this->post('/tests', ['payload' => $payload]);
+		$this->assertJsonOKEquals(['id' => $newTest->id], 'Некорректный результат при добавлении повторной записи');
+		self::assertEquals(1, $phpTests->find()->where($conditions)->count(), 'Добавился дубликат одного и того же запроса');
 	}
 
 	/**

@@ -93,42 +93,76 @@ class PhpTestsShell extends Shell
 		$checkoutStartTime = microtime(true);
 		$git = new Git($repositoryConfig['deployKey'], $repositoryConfig['repositoryLocation']);
 		$git->updateRefs();
-		$git->checkout($ref);
-		$git->pullCurrentBranch();
-		$resultArr[] = $this->_formatReport('Checkout to branch ' . $repositoryConfig['repositoryLocation'], '', $checkoutStartTime);
-
-		MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port']);
-
-		$fillStartTime = microtime(true);
-		$fillStrings = MySql::executeSqlFile($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port'], $repositoryConfig['structureFile']);
-		$resultArr[] = $this->_formatReport('Fill database structure', (strlen($fillStrings) ? '<pre>' . $fillStrings . '</pre>' : ''), $fillStartTime);
-		$result = false;
-
-		if (!strlen($fillStrings)) {
-			$resultArr[] = $this->_formatReport('Run composer', System::execute($repositoryConfig['composerUpdateCommand'], $repositoryConfig['repositoryLocation']), microtime(true));
-
-			$migrationStartTime = microtime(true);
-			$migrationsLog = System::execute($repositoryConfig['phinxCommand'], $repositoryConfig['repositoryLocation']);
-			$resultArr[] = $this->_formatReport('Run migrations', nl2br($migrationsLog), $migrationStartTime);
-
-			if (preg_match(self::SUCCESS_PHINX_REGEXP, $migrationsLog)) {
-				$phpUnitStartTime = microtime(true);
-				$unitTestLog = System::execute($repositoryConfig['phpUnitCommand'], $repositoryConfig['repositoryLocation']);
-				if (preg_match(self::SUCCESS_PHPUNIT_REGEXP, $unitTestLog) && !stristr($unitTestLog, self::PHP_WARNING_STRING)) {
-					$result = true;
-				}
-				$resultArr[] = $this->_formatReport('Run PhpUnit', nl2br($unitTestLog), $phpUnitStartTime);
-			}
+		$gitOutput = '';
+		$pullOutput = '';
+		$successCheckout = $git->checkout($ref, $gitOutput);
+		if ($successCheckout) {
+			$git->pullCurrentBranch($pullOutput);
 		}
+		$resultArr[] = $this->_formatReport('Checkout to branch ' . $repositoryConfig['repositoryLocation'], $gitOutput . "\n" . $pullOutput, $checkoutStartTime);
 
-		MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port']);
+		$result = false;
+		if ($successCheckout) {
+			MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port']);
 
+			$fillStartTime = microtime(true);
+			$fillStrings = MySql::executeSqlFile($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port'], $repositoryConfig['structureFile']);
+			$resultArr[] = $this->_formatReport('Fill database structure', (strlen($fillStrings) ? '<pre>' . $fillStrings . '</pre>' : ''), $fillStartTime);
+
+			if (!strlen($fillStrings)) {
+				$resultArr[] = $this->_formatReport('Run composer', System::execute($this->_getCmd($repositoryConfig['composerUpdateCommand']), $this->_getWorkDir($repositoryConfig['composerUpdateCommand'], $repositoryConfig)), microtime(true));
+
+				$migrationStartTime = microtime(true);
+				$migrationsLog = System::execute($this->_getCmd($repositoryConfig['phinxCommand']), $this->_getWorkDir($repositoryConfig['phinxCommand'], $repositoryConfig));
+				$resultArr[] = $this->_formatReport('Run migrations', nl2br($migrationsLog), $migrationStartTime);
+
+				if (preg_match(self::SUCCESS_PHINX_REGEXP, $migrationsLog)) {
+					$phpUnitStartTime = microtime(true);
+					$unitTestLog = System::execute($this->_getCmd($repositoryConfig['phpUnitCommand']), $this->_getWorkDir($repositoryConfig['phpUnitCommand'], $repositoryConfig));
+					if (preg_match(self::SUCCESS_PHPUNIT_REGEXP, $unitTestLog) && !stristr($unitTestLog, self::PHP_WARNING_STRING)) {
+						$result = true;
+					}
+					$resultArr[] = $this->_formatReport('Run PhpUnit', nl2br($unitTestLog), $phpUnitStartTime);
+				}
+			}
+
+			MySql::dropDbTables($repositoryConfig['database']['host'], $repositoryConfig['database']['name'], $repositoryConfig['database']['login'], $repositoryConfig['database']['password'], $repositoryConfig['database']['port']);
+		}
 		$elapsedSeconds = microtime(true) - $testStartTime;
 		return [
 			'success' => $result,
 			'elapsedSeconds' => $elapsedSeconds,
 			'activity' => $resultArr,
 		];
+	}
+
+	/**
+	 * Определяем выполняему команду
+	 *
+	 * @param string|array $cmd
+	 * @return string
+	 */
+	private function _getCmd($cmd) {
+		if (is_array($cmd)) {
+			return $cmd[0];
+		} else {
+			return $cmd;
+		}
+	}
+
+	/**
+	 * Определяем рабочую папку для команды
+	 *
+	 * @param string|array $cmd
+	 * @param array $repositoryConfig
+	 * @return string
+	 */
+	private function _getWorkDir($cmd, $repositoryConfig) {
+		if (is_array($cmd)) {
+			return $repositoryConfig['repositoryLocation'] . '/' . $cmd[1];
+		} else {
+			return $repositoryConfig['repositoryLocation'];
+		}
 	}
 
 	/**
@@ -140,10 +174,11 @@ class PhpTestsShell extends Shell
 	 * @return array
 	 */
 	private function _formatReport($header, $text, $timeStart) {
-		return [
+		$result = [
 			'header' => $header,
 			'report' => iconv("UTF-8", "UTF-8//IGNORE", $text),
 			'elapsedTime' => microtime(true) - $timeStart,
 		];
+		return $result;
 	}
 }
