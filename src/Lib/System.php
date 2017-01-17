@@ -17,8 +17,8 @@ class System
 			chdir($relativePath);
 		}
 
-		$output = '';
-		exec($cmd.' 2>&1', $output);
+		$output = [];
+		exec($cmd . ' 2>&1', $output);
 
 		if ($relativePath !== false) {
 			chdir($curDir);

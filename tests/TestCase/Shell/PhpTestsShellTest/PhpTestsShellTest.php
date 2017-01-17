@@ -269,7 +269,7 @@ class PhpTestsShellTest extends AppTestCase
 	/**
 	 * PHPUnit отвалился
 	 */
-	public function testDoTestBadPhpUnit() {
+	public function testDoTestBadCacke() {
 		$testBranch = 'SITE-23';
 
 		$executeResults = [
@@ -277,7 +277,76 @@ class PhpTestsShellTest extends AppTestCase
 			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'OK'],
 			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
 			['cmd' => $this->_repository['phinxCommand'], 'result' => 'All Done. Took 1s'],
-			['cmd' => $this->_repository['phpUnitCommand'], 'result' => "<div class='cake-error'>Warning (2): mkdir(): No such file or directory [APP/Console/Command/SyncOrdersShell.php, line 251]</div>\nOK (4 tests, 18 assertions)"],
+			[
+				'cmd' => $this->_repository['phpUnitCommand'],
+				'result' => "<div class='cake-error'>Warning (2): mkdir(): No such file or directory [APP/Console/Command/SyncOrdersShell.php, line 251]</div>\nOK (4 tests, 18 assertions)",
+			],
+		];
+
+		$this->_makeDoDestMocks($testBranch, $executeResults);
+
+		$result = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_doTest', $this->PhpTestsShell, [
+			$this->_repository,
+			$testBranch,
+		]);
+		self::assertFalse($result['success'], 'Некорректный результат');
+	}
+
+	/** Ошибка PHP */
+	public function testDoTestBadPHP() {
+		$testBranch = 'SITE-23';
+
+		$errorResult = <<<'PHPUNITOUT'
+		............................................................... 315 / 359 ( 87%)<br />
+		...<pre class=\"cake-error\"><a href=\"javascript:void(0);\" onclick=\"document.getElementById('cakeErr5875014e92cb8-trace').style.display = (document.getElementById('cakeErr5875014e92cb8-trace').style.display == 'none' ? '' : 'none');\"><b>Warning</b> (512)</a>: SplFileInfo::openFile(/var/www/site/app/tmp/cache/persistent/0dev_myapp_query_cache_item#get_itemcfa588ee80907056a2f12f2074df3244): failed to open stream: No space left on device [<b>CORE/Cake/Cache/Engine/FileEngine.php</b>, line <b>356</b>]<div id=\"cakeErr5875014e92cb8-trace\" class=\"cake-stack-trace\" style=\"display: none;\"><a href=\"javascript:void(0);\" onclick=\"document.getElementById('cakeErr5875014e92cb8-code').style.display = (document.getElementById('cakeErr5875014e92cb8-code').style.display == 'none' ? '' : 'none')\">Code</a> <a href=\"javascript:void(0);\" onclick=\"document.getElementById('cakeErr5875014e92cb8-context').style.display = (document.getElementById('cakeErr5875014e92cb8-context').style.display == 'none' ? '' : 'none')\">Context</a><pre id=\"cakeErr5875014e92cb8-code\" class=\"cake-code-dump\" style=\"display: none;\"><code><span style=\"color: #000000\"><span style=\"color: #0000BB\"></span></span></code><br />
+		<code><span style=\"color: #000000\"><span style=\"color: #0000BB\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style=\"color: #007700\">if&nbsp;(</span><span style=\"color: #0000BB\">$this</span><span style=\"color: #007700\">-&gt;</span><span style=\"color: #0000BB\">existingHandler&nbsp;</span><span style=\"color: #007700\">!==&nbsp;</span><span style=\"color: #0000BB\">null</span><span style=\"color: #007700\">)&nbsp;{</span></span></code><br />
+		<span class=\"code-highlight\"><code><span style=\"color: #000000\"><span style=\"color: #0000BB\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style=\"color: #007700\">return&nbsp;</span><span style=\"color: #0000BB\">call_user_func</span><span style=\"color: #007700\">(</span><span style=\"color: #0000BB\">$this</span><span style=\"color: #007700\">-&gt;</span><span style=\"color: #0000BB\">existingHandler</span><span style=\"color: #007700\">,&nbsp;</span><span style=\"color: #0000BB\">$code</span><span style=\"color: #007700\">,&nbsp;</span><span style=\"color: #0000BB\">$message</span><span style=\"color: #007700\">,&nbsp;</span><span style=\"color: #0000BB\">$file</span><span style=\"color: #007700\">,&nbsp;</span><span style=\"color: #0000BB\">$line</span><span style=\"color: #007700\">,&nbsp;</span><span style=\"color: #0000BB\">$context</span><span style=\"color: #007700\">);</span></span></code></span></pre><pre id=\"cakeErr5875014e92cb8-context\" class=\"cake-context\" style=\"display: none;\">$key = &#039;0dev_myapp_query_cache_item#get_itemcfa588ee80907056a2f12f2074df3244&#039;<br />
+		$createKey = true<br />
+		$groups = null<br />
+		$dir = &#039;/var/www/site/app/tmp/cache/persistent/&#039;<br />
+		$path = object(SplFileInfo) {<br />
+		<br />
+		}<br />
+		$exists = false<br />
+		$e = object(RuntimeException) {<br />
+			xdebug_message =&gt; &#039;<br />
+		RuntimeException: SplFileInfo::openFile(/var/www/site/app/tmp/cache/persistent/0dev_myapp_query_cache_item#get_itemcfa588ee80907056a2f12f2074df3244): failed to open stream: No space left on device in /var/www/site/lib/Cake/Cache/Engine/FileEngine.php on line 354<br />
+		<br />
+		Call Stack:<br />
+		    0.0003     224432   1. {main}() /var/www/site/vendor/phpunit/phpunit/phpunit:0<br />
+		    0.0151     618320   2. PHPUnit_TextUI_Command::main() /var/www/site/vendor/phpunit/phpunit/phpunit:55<br />
+		    0.0151     618936   3. PHPUnit_TextUI_Command-&gt;run() /var/www/site/vendor/phpunit/phpunit/src/TextUI/Command.php:132<br />
+		    0.8519   18743424   4. PHPUnit_TextUI_TestRunner-&gt;doRun() /var/www/site/vendor/phpunit/phpunit/src/TextUI/Command.php:179<br />
+		    0.8587   19124056   5. PHPUnit_Framework_TestSuite-&gt;run() /var/www/site/vendor/phpunit/phpunit/src/TextUI/TestRunner.php:425<br />
+		  360.7693  209513816   6. PHPUnit_Framework_TestSuite-&gt;run() /var/www/site/vendor/phpunit/phpunit/src/Framework/TestSuite.php:675<br />
+		  360.7787  209516440   7. AppTestCase-&gt;run() /var/www/site/vendor/phpunit/phpunit/src/Framework/TestSuite.php:675<br />
+		  360.7788  209516528   8. AppTestCase-&gt;runCase() /var/www/site/app/Test/Case/AppTestCase.php:18<br />
+		  360.8391  209781160   9. CakeTestCase-&gt;run() /var/www/site/app/Test/Case/TestCaseTrait.php:41<br />
+		  361.5262  209399064  10. PHPUnit_Framework_TestCase-&gt;run() /var/www/site/lib/Cake/TestSuite/CakeTestCase.php:82<br />
+		  361.5263  209399472  11. PHPUnit_Framework_TestResult-&gt;run() /var/www/site/vendor/phpunit/phpunit/src/Framework/TestCase.php:754<br />
+		  361.5265  209401544  12. PHPUnit_Framework_TestCase-&gt;runBare() /var/www/site/vendor/phpunit/phpunit/src/Framework/TestResult.php:686<br />
+		  361.8848  209520336  13. PHPUnit_Framework_TestCase-&gt;runTest() /var/www/site/vendor/phpunit/phpunit/src/Framework/TestCase.php:818<br />
+		  361.8848  209521168  14. ReflectionMethod-&gt;invokeArgs() /var/www/site/vendor/phpunit/phpunit/src/Framework/TestCase.php:952<br />
+		  361.8848  209521536  15. ItemTest-&gt;testGetItem() /var/www/site/vendor/phpunit/phpunit/src/Framework/TestCase.php:952<br />
+		  361.9757  209409064  16. Item-&gt;getItem() /var/www/site/app/Test/Case/Model/ItemTest/ItemTest.php:49<br />
+		  361.9757  209410216  17. Cache::remember() /var/www/site/app/Model/Item.php:113<br />
+		  361.9817  209446064  18. Cache::write() /var/www/site/lib/Cake/Cache/Cache.php:577<br />
+		  361.9818  209446200  19. FileEngine-&gt;write() /var/www/site/lib/Cake/Cache/Cache.php:317<br />
+		  361.9818  209446248  20. FileEngine-&gt;_setKey() /var/www/site/lib/Cake/Cache/Engine/FileEngine.php:116<br />
+		  361.9819  209451104  21. SplFileInfo-&gt;openFile() /var/www/site/lib/Cake/Cache/Engine/FileEngine.php:354<br />
+		&#039;<br />
+			severity =&gt; (int) 2<br />
+PHPUNITOUT;
+
+		$executeResults = [
+			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'master'],
+			['cmd' => Git::GIT_COMMAND_TEST, 'result' => 'OK'],
+			['cmd' => $this->_repository['composerUpdateCommand'], 'result' => 'Composer ok'],
+			['cmd' => $this->_repository['phinxCommand'], 'result' => 'All Done. Took 1s'],
+			[
+				'cmd' => $this->_repository['phpUnitCommand'],
+				'result' => $errorResult,
+			],
 		];
 
 		$this->_makeDoDestMocks($testBranch, $executeResults);
