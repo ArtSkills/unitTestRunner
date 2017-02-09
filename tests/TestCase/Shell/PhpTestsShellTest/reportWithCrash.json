@@ -1,0 +1,27 @@
+[
+  {
+    "header": "Checkout to branch \/var\/www\/crm",
+    "report": "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0435\u043d\u043e \u043d\u0430 \u043d\u043e\u0432\u0443\u044e \u0432\u0435\u0442\u043a\u0443 \u00ab1cSetPayment\u00bb<br \/>\n\u0412\u0435\u0442\u043a\u0430 1cSetPayment \u043e\u0442\u0441\u043b\u0435\u0436\u0438\u0432\u0430\u0435\u0442 \u0432\u043d\u0435\u0448\u043d\u044e\u044e \u0432\u0435\u0442\u043a\u0443 1cSetPayment \u0438\u0437 origin.<br \/>\n\u0423\u0436\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e.",
+    "elapsedTime": 5.770359992981
+  },
+  {
+    "header": "Fill database structure",
+    "report": "",
+    "elapsedTime": 2.4470329284668
+  },
+  {
+    "header": "Run composer",
+    "report": "You are running composer with xdebug enabled. This has a major impact on runtime performance. See https:\/\/getcomposer.org\/xdebug<br \/>\nLoading composer repositories with package information<br \/>\n\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b                                                      \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bReading composer.json of artskills\/mock (expectArgsList)\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bReading composer.json of artskills\/mock (master)        \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bReading composer.json of artskills\/mock (phpunitExceptions)\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b                                                           \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bUpdating dependencies (including require-dev)<br \/>\nNothing to install or update<br \/>\nGenerating autoload files<br \/>\n> Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump",
+    "elapsedTime": 3.4093856811523e-5
+  },
+  {
+    "header": "Run migrations",
+    "report": "Phinx by Rob Morgan - https:\/\/phinx.org. 0.6.5<br \/>\n<br \/>\nusing config file .\/phinx.php<br \/>\nusing config parser php<br \/>\nusing migration path \/media\/storage\/dev.www\/crm\/NewCrm\/db\/migrations<br \/>\nusing seed path \/media\/storage\/dev.www\/crm\/NewCrm\/db\/seeds<br \/>\nwarning no environment specified, defaulting to: default<br \/>\nusing adapter mysql<br \/>\nusing database vtigercrm_structure<br \/>\n<br \/>\n == 20161128091634 MasterProductivity: migrating<br \/>\n == 20161128091634 MasterProductivity: migrated 0.0196s<br \/>\n<br \/>\n == 20161129122706 AddShopBill: migrating<br \/>\n == 20161129122706 AddShopBill: migrated 0.0099s<br \/>\n<br \/>\n == 20161129135610 AdditionalOccasions: migrating<br \/>\n == 20161129135610 AdditionalOccasions: migrated 0.0044s<br \/>\n<br \/>\n == 20161129135611 AccountsInterests: migrating<br \/>\n == 20161129135611 AccountsInterests: migrated 0.0051s<br \/>\n<br \/>\n == 20161129135612 AccountsOccasions: migrating<br \/>\n == 20161129135612 AccountsOccasions: migrated 0.0064s<br \/>\n<br \/>\n == 20161205084004 OutSourceProduction: migrating<br \/>\n == 20161205084004 OutSourceProduction: migrated 0.1055s<br \/>\n<br \/>\n == 20161205122827 AddKonasovProduction: migrating<br \/>\n == 20161205122827 AddKonasovProduction: migrated 0.0023s<br \/>\n<br \/>\n == 20161208150436 PickListSort: migrating<br \/>\n == 20161208150436 PickListSort: migrated 0.0073s<br \/>\n<br \/>\n == 20161209141740 ScheduleDatesTemp: migrating<br \/>\n == 20161209141740 ScheduleDatesTemp: migrated 0.0089s<br \/>\n<br \/>\n == 20161209141746 ScheduleDatesClean: migrating<br \/>\n == 20161209141746 ScheduleDatesClean: migrated 0.0464s<br \/>\n<br \/>\n == 20161212085920 EnableNoManagerCall: migrating<br \/>\n == 20161212085920 EnableNoManagerCall: migrated 0.0031s<br \/>\n<br \/>\n == 20161213142814 TaskFail: migrating<br \/>\n == 20161213142814 TaskFail: migrated 0.0040s<br \/>\n<br \/>\n == 20161220083036 SmsProvider: migrating<br \/>\n == 20161220083036 SmsProvider: migrated 0.0237s<br \/>\n<br \/>\n == 20161220124720 ParamsInExport1cQueue: migrating<br \/>\n == 20161220124720 ParamsInExport1cQueue: migrated 0.0112s<br \/>\n<br \/>\n == 20161221140601 NewCategoriesAndUnits: migrating<br \/>\n == 20161221140601 NewCategoriesAndUnits: migrated 0.0185s<br \/>\n<br \/>\n == 20161226082011 ManufacturingInstructions: migrating<br \/>\n == 20161226082011 ManufacturingInstructions: migrated 0.0205s<br \/>\n<br \/>\n == 20170118124353 NewExpendablesCheck: migrating<br \/>\n == 20170118124353 NewExpendablesCheck: migrated 0.0089s<br \/>\n<br \/>\nAll Done. Took 0.3728s",
+    "elapsedTime": 0.50720500946045
+  },
+  {
+    "header": "Run PhpUnit",
+    "report": "PHPUnit 5.7.12 by Sebastian Bergmann and contributors.<br \/>\n<br \/>\n...............................................................  63 \/ 510 ( 12%)<br \/>\n............................................................... 126 \/ 510 ( 24%)<br \/>\n...........zend_mm_heap corrupted",
+    "elapsedTime": 221.12019777298
+  }
+]

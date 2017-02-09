@@ -394,4 +394,15 @@ PHPUNITOUT;
 			->expectArgs($this->_repository['database']['host'], $this->_repository['database']['name'], $this->_repository['database']['login'], $this->_repository['database']['password'], $this->_repository['database']['port'], $this->_repository['structureFile'])
 			->willReturnValue($importStructResult);
 	}
+
+	/**
+	 * Определяем финальный статус теста
+	 */
+	public function testGetFinalStatus() {
+		$testStatus = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_getFinalStatus', $this->PhpTestsShell, [json_decode(file_get_contents(__DIR__.'/reportWithCrash.json'), true)]);
+		self::assertEquals(PhpTestsTable::STATUS_NEW, $testStatus);
+
+		$testStatus = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_getFinalStatus', $this->PhpTestsShell, [json_decode(file_get_contents(__DIR__.'/reportGood.json'), true)]);
+		self::assertEquals(PhpTestsTable::STATUS_FINISHED, $testStatus);
+	}
 }

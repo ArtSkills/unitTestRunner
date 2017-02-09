@@ -25,6 +25,8 @@ class PhpTestsShell extends Shell
 	const SUCCESS_PHPUNIT_REGEXP = '/OK\s\(([0-9]+)\stests\,\s([0-9]+)\sassertions\)/';
 	const PHP_WARNING_REGEXP = '/(cake-error|xdebug_message|Warning Error)/';
 
+	const PROCESS_CRASH_MESSAGE = 'zend_mm_heap corrupted';
+
 	/**
 	 * Запуск PHP тестов
 	 */
@@ -75,8 +77,24 @@ class PhpTestsShell extends Shell
 		$url = Configure::read('serverUrl') . '/tests/' . $phpTest->id . '/activity/' . $historyRec->id;
 		$gitHub->changeCommitStatus($phpTest->repository, $phpTest->sha, $saveStatus, $shortDescription, $url);
 
-		$this->PhpTests->patchEntity($phpTest, ['status' => PhpTestsTable::STATUS_FINISHED]);
+		$this->PhpTests->patchEntity($phpTest, ['status' => $this->_getFinalStatus($result['activity'])]);
 		$this->PhpTests->save($phpTest);
+	}
+
+	/**
+	 * Определяем финальный статус теста
+	 *
+	 * @param array $activityReport
+	 * @return string
+	 */
+	private function _getFinalStatus($activityReport) {
+		foreach ($activityReport as $rec) {
+			if (stristr($rec['report'], self::PROCESS_CRASH_MESSAGE)) {
+				return PhpTestsTable::STATUS_NEW;
+			}
+		}
+
+		return PhpTestsTable::STATUS_FINISHED;
 	}
 
 	/**

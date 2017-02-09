@@ -1,0 +1,22 @@
+[
+  {
+    "header": "Checkout to branch \/var\/www\/site",
+    "report": "",
+    "elapsedTime": 2.1026468276978
+  },
+  {
+    "header": "Fill database structure",
+    "report": "<pre><\/pre>",
+    "elapsedTime": 6.867889881134
+  },
+  {
+    "header": "Run migrations",
+    "report": "<pre>Phinx by Rob Morgan - https:\/\/phinx.org. version 0.6.4\n\nusing config file .\/phinx.php\nusing config parser php\nusing migration path \/var\/www\/site\/db\/migrations\nusing seed path \/var\/www\/site\/db\/seeds\nwarning no environment specified, defaulting to: default\nusing adapter mysql\nusing database artskills\n\nAll Done. Took 0.0086s<\/pre>",
+    "elapsedTime": 0.084183216094971
+  },
+  {
+    "header": "Run PhpUnit",
+    "report": "PHPUnit 3.7.38 by Sebastian Bergmann.<br \/>\n<br \/>\n.Start: 2016-08-22 10:10:34<br \/>\nChecked out master!<br \/>\nRefs are updated!<br \/>\nDir: \/var\/www\/site<br \/>\nDeleted old merged remote branch ItemFix (last commit date: 2016-08-15)!<br \/>\nDeleted old merged remote branch SITE-16 (last commit date: 2016-08-11)!<br \/>\nDeleted old merged remote branch SITE-18 (last commit date: 2016-08-11)!<br \/>\nDeleted old merged remote branch SITE-21 (last commit date: 2016-08-12)!<br \/>\nDeleted old merged remote branch SITE-22 (last commit date: 2016-08-12)!<br \/>\nDeleted old merged remote branch SITE-6 (last commit date: 2016-08-12)!<br \/>\nDeleted old merged remote branch SITE-8 (last commit date: 2016-08-10)!<br \/>\nDeleted old merged remote branch allowCards (last commit date: 2016-08-12)!<br \/>\nDeleted old merged remote branch lailune-patch-1 (last commit date: 2016-08-11)!<br \/>\nDeleted old merged remote branch refactoringCart (last commit date: 2016-08-11)!<br \/>\nDeleted old merged remote branch widgetFix (last commit date: 2016-08-11)!<br \/>\nChecked out SITE-23!<br \/>\nFinish!<br \/>\n..............................................................  63 \/ 192 ( 32%)<br \/>\n............................................................... 126 \/ 192 ( 65%)<br \/>\n............................................................... 189 \/ 192 ( 98%)<br \/>\n...<br \/>\n<br \/>\nTime: 7.27 minutes, Memory: 116.00Mb<br \/>\n<br \/>\nOK (192 tests, 5767 assertions)",
+    "elapsedTime": 436.55857801437
+  }
+]
