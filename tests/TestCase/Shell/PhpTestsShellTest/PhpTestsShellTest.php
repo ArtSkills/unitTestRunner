@@ -113,7 +113,7 @@ class PhpTestsShellTest extends AppTestCase
 		$unitTestResult = [
 			'success' => true,
 			'elapsedSeconds' => 1,
-			'activity' => ['1' => '2'],
+			'activity' => [['report' => '2']],
 		];
 
 		MethodMocker::mock(PhpTestsShell::class, '_doTest')
@@ -169,7 +169,7 @@ class PhpTestsShellTest extends AppTestCase
 		$unitTestResult = [
 			'success' => false,
 			'elapsedSeconds' => 1,
-			'activity' => ['1' => '2'],
+			'activity' => [['report' => '2']],
 		];
 
 		MethodMocker::mock(PhpTestsShell::class, '_doTest')

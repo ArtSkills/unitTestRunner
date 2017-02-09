@@ -10,6 +10,8 @@ use App\Model\Table\PhpTestActivityTable;
 use App\Model\Table\PhpTestsTable;
 use Cake\Console\Shell;
 use Cake\Core\Configure;
+use Cake\Database\Connection;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * @property PhpTestsTable $PhpTests
@@ -66,6 +68,7 @@ class PhpTestsShell extends Shell
 			$shortDescription = self::MSG_BAD_TEST_RESULT;
 		}
 
+		$this->_restoreDbConnection();
 		$this->loadModel('PhpTestActivity');
 
 		$historyRec = $this->PhpTestActivity->saveArr([
@@ -198,5 +201,19 @@ class PhpTestsShell extends Shell
 			'elapsedTime' => microtime(true) - $timeStart,
 		];
 		return $result;
+	}
+
+	/**
+	 * Пересоздаём подключение к БД
+	 */
+	private function _restoreDbConnection() {
+		/**
+		 * @var Connection $structureConnection
+		 */
+		$structureConnection = ConnectionManager::get('default', false);
+		if (!@$structureConnection->isConnected()) {
+			$structureConnection->disconnect();
+			$structureConnection->connect();
+		}
 	}
 }
