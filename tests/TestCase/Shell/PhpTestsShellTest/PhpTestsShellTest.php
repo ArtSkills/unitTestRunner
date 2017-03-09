@@ -131,7 +131,7 @@ class PhpTestsShellTest extends AppTestCase
 		$phpTestActivityTable = PhpTestActivityTable::instance();
 		$historyRec = $phpTestActivityTable->find()->where(['php_test_id' => $workingRec->id])->first();
 		self::assertEquals($unitTestResult['elapsedSeconds'], $historyRec->elapsed_seconds, 'Не добавилась запись истории');
-		self::assertEquals($unitTestResult['activity'], json_decode($historyRec->content, true), 'Не добавилась запись истории');
+		self::assertEquals($unitTestResult['activity'], $historyRec->content, 'Не добавилась запись истории');
 	}
 
 	/**

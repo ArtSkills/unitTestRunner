@@ -7,7 +7,7 @@
 $elMinutes = floor($activity->elapsed_seconds / 60);
 $elSeconds = ceil($activity->elapsed_seconds - $elMinutes * 60);
 
-$testSteps = json_decode($activity->content, true);
+$testSteps = !is_array($activity->content)? json_decode($activity->content, true): $activity->content;
 $title = 'Тест ветки ' . $activity->php_test->ref . ' репозитория ' . $activity->php_test->repository;
 $this->assign('title', $title);
 ?>
