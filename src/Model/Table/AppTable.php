@@ -20,7 +20,7 @@ class AppTable extends Table
 	 *
 	 * @return string
 	 */
-	public static function getAlias() {
+	public static function getStaticAlias() {
 		$classNameParts = explode('\\', static::class);
 		return str_replace('Table', '', array_pop($classNameParts));
 	}
@@ -31,7 +31,7 @@ class AppTable extends Table
 	 * @return static
 	 */
 	public static function instance() {
-		return TableRegistry::get(static::getAlias());
+		return TableRegistry::get(static::getStaticAlias());
 	}
 
 	/**
