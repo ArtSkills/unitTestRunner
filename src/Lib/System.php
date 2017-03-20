@@ -1,6 +1,8 @@
 <?php
 namespace App\Lib;
 
+use Cake\Log\Log;
+
 class System
 {
 	/**
@@ -18,6 +20,7 @@ class System
 		}
 
 		$output = [];
+		Log::info($cmd);
 		exec($cmd . ' 2>&1', $output);
 
 		if ($relativePath !== false) {
