@@ -59,7 +59,7 @@ class TestsControllerTest extends AppControllerTestCase
 		$this->_setSecretHeader();
 
 		MethodMocker::mock(GitHub::class, 'changeCommitStatus')
-			->singleCall();
+			->expectCall(3);
 
 		$payload = file_get_contents(__DIR__ . '/pull_request.json');
 
@@ -79,6 +79,20 @@ class TestsControllerTest extends AppControllerTestCase
 		$this->post('/tests', ['payload' => $payload]);
 		$this->assertJsonOKEquals(['id' => $newTest->id], 'Некорректный результат при добавлении повторной записи');
 		self::assertEquals(1, $phpTests->find()->where($conditions)->count(), 'Добавился дубликат одного и того же запроса');
+
+		// Отменяем уже запущенный тест
+		$phpTests->saveArr(['status' => PhpTestsTable::STATUS_PROCESSING], $newTest);
+		$this->_setSecretHeader();
+		$this->post('/tests', ['payload' => file_get_contents(__DIR__ . '/pull_request_closed.json')]);
+		$this->assertJsonOKEquals(['cancelled' => false]);
+		self::assertTrue($phpTests->exists(['id' => $newTest->id]), 'Удалился запущенный тест');
+
+		// Отменяем еще не запущенный тест
+		$phpTests->saveArr(['status' => PhpTestsTable::STATUS_NEW], $newTest);
+		$this->_setSecretHeader();
+		$this->post('/tests', ['payload' => file_get_contents(__DIR__ . '/pull_request_closed.json')]);
+		$this->assertJsonOKEquals(['cancelled' => true]);
+		self::assertFalse($phpTests->exists(['id' => $newTest->id]), 'Не удалился тест');
 	}
 
 	/**

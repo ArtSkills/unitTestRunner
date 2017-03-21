@@ -19,6 +19,7 @@ use Cake\Core\Configure;
 class TestsController extends AppController
 {
 	const PUSH_QUEUE_MESSAGE = 'в очередь!';
+	const CANCEL_MESSAGE = 'сделали всё не дожидаясь меня ;(';
 
 	const MSG_ADD_BAD_ARGS = 'Bad args';
 	const MSG_ADD_BAD_SECRET = 'Bad secret';
@@ -30,6 +31,7 @@ class TestsController extends AppController
 	const GITHUB_SECRET_HEADER = 'X-Hub-Signature';
 
 	const GITHUB_ADD_STATUSES = ['reopened', 'opened', 'synchronize'];
+	const GITHUB_CLOSED_STATUSES = ['closed'];
 
 	/**
 	 * GitHub
@@ -70,13 +72,23 @@ class TestsController extends AppController
 		}
 
 		$payLoad = json_decode($this->request->data['payload'], true);
+		if (empty($payLoad['pull_request'])) {
+			return $this->_sendJsonError(self::MSG_ADD_BAD_ACTION);
+		}
 
-		if (!empty($payLoad['action']) && in_array($payLoad['action'], self::GITHUB_ADD_STATUSES)) {
-			if (isset(Configure::read('repositories')[$payLoad['pull_request']['base']['repo']['full_name']])) {
-				return $this->_sendJsonOk(['id' => $this->_processPullRequest($payLoad['pull_request'])]);
-			} else {
-				return $this->_sendJsonError(self::MSG_ADD_BAD_REPO);
-			}
+		$repository = $payLoad['pull_request']['base']['repo']['full_name'];
+		$sha = $payLoad['pull_request']['head']['sha'];
+		$ref = $payLoad['pull_request']['head']['ref'];
+
+		$gitAction = !empty($payLoad['action']) ? $payLoad['action'] : [];
+		if (!isset(Configure::read('repositories')[$repository])) {
+			return $this->_sendJsonError(self::MSG_ADD_BAD_REPO);
+		}
+
+		if (in_array($gitAction, self::GITHUB_ADD_STATUSES)) {
+			return $this->_sendJsonOk(['id' => $this->_processPullRequest($repository, $ref, $sha)]);
+		} elseif (in_array($gitAction, self::GITHUB_CLOSED_STATUSES)) {
+			return $this->_sendJsonOk(['cancelled' => $this->_cancelPullRequest($repository, $ref, $sha)]);
 		} else {
 			return $this->_sendJsonError(self::MSG_ADD_BAD_ACTION);
 		}
@@ -85,14 +97,12 @@ class TestsController extends AppController
 	/**
 	 * Обработка нового Pull Request
 	 *
-	 * @param array $pullRequest
+	 * @param string $repository
+	 * @param string $ref
+	 * @param string $sha
 	 * @return int
 	 */
-	private function _processPullRequest($pullRequest) {
-		$repository = $pullRequest['base']['repo']['full_name'];
-		$sha = $pullRequest['head']['sha'];
-		$ref = $pullRequest['head']['ref'];
-
+	private function _processPullRequest($repository, $ref, $sha) {
 		$existingTest = $this->PhpTests->find()
 			->where([
 				'repository' => $repository,
@@ -100,19 +110,40 @@ class TestsController extends AppController
 				'status' => PhpTestsTable::STATUS_NEW,
 			])->first();
 
-		if ($existingTest) {
-			return $existingTest->id;
-		} else {
-			$newRec = $this->PhpTests->saveArr([
+		$newRec = $this->PhpTests->saveArr([
+			'repository' => $repository,
+			'ref' => $ref,
+			'sha' => $sha,
+			'status' => PhpTestsTable::STATUS_NEW,
+		], $existingTest);
+
+		$this->_gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
+		return $newRec->id;
+	}
+
+	/**
+	 * Удаляем не начатый тест из очереди
+	 *
+	 * @param string $repository
+	 * @param string $ref
+	 * @param string $sha
+	 * @return bool
+	 */
+	private function _cancelPullRequest($repository, $ref, $sha) {
+		$existingTest = $this->PhpTests->find()
+			->where([
 				'repository' => $repository,
 				'ref' => $ref,
 				'sha' => $sha,
 				'status' => PhpTestsTable::STATUS_NEW,
-			]);
+			])->first();
 
-			$gitHub = $this->_gitHub;
-			$gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
-			return $newRec->id;
+		if (!empty($existingTest)) {
+			$this->PhpTests->delete($existingTest);
+			$this->_gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_SUCCESS, self::CANCEL_MESSAGE);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
