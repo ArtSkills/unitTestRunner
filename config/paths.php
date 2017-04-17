@@ -57,13 +57,6 @@ define('WWW_ROOT', ROOT . DS . 'webroot' . DS);
 define('TESTS', ROOT . DS . 'tests' . DS);
 
 /**
- * Папка с файлами фикстур БД
- */
-define('TEST_FIXTURE', TESTS . 'Fixture' . DS . 'Data' . DS);
-
-define('AS_COMMON', ROOT . DS . 'vendor' . DS . 'artskills' . DS . 'common' . DS . 'src' . DS);
-
-/**
  * Path to the temporary files directory.
  */
 define('TMP', ROOT . DS . 'tmp' . DS);
