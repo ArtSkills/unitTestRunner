@@ -5,8 +5,8 @@ namespace App\Test\TestCase\Controller\TestsControllerTest;
 use App\Controller\TestsController;
 use App\Lib\GitHub;
 use App\Model\Table\PhpTestsTable;
-use App\Test\Suite\MethodMocker;
 use App\Test\TestCase\Controller\AppControllerTestCase;
+use ArtSkills\TestSuite\Mock\MethodMocker;
 use Cake\Core\Configure;
 
 class TestsControllerTest extends AppControllerTestCase
@@ -14,7 +14,7 @@ class TestsControllerTest extends AppControllerTestCase
 	/**
 	 * @inheritdoc
 	 */
-	public $fixtures = ['app.php_tests'];
+	public $fixtures = [PHP_TESTS];
 
 	/**
 	 * Добавление теста

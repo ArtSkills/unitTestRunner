@@ -9,6 +9,7 @@
 	<php>
 		<ini name="memory_limit" value="-1"/>
 		<ini name="apc.enable_cli" value="1"/>
+		<ini name="error_reporting" value="E_ALL"/>
 	</php>
 
 	<!-- Add any additional test suites you want to run here -->
@@ -21,9 +22,9 @@
 	<!-- Setup a listener for fixtures -->
 	<listeners>
 		<listener
-				class="App\Test\Fixture\FixtureInjector">
+				class="ArtSkills\TestSuite\Fixture\FixtureInjector">
 			<arguments>
-				<object class="App\Test\Fixture\FixtureManager"/>
+				<object class="ArtSkills\TestSuite\Fixture\FixtureManager"/>
 			</arguments>
 		</listener>
 	</listeners>

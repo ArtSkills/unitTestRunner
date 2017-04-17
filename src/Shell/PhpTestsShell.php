@@ -27,7 +27,7 @@ class PhpTestsShell extends Shell
 	const SUCCESS_PHPUNIT_REGEXP = '/OK\s\(([0-9]+)\stests\,\s([0-9]+)\sassertions\)/';
 	const PHP_WARNING_REGEXP = '/(cake-error|xdebug_message|Warning Error)/';
 
-	const PROCESS_CRASH_MESSAGE = 'zend_mm_heap corrupted';
+	const PROCESS_CRASH_MESSAGE = '/(Segmentation fault|zend_mm_heap corrupted)/';
 
 	/**
 	 * Запуск PHP тестов
@@ -92,7 +92,7 @@ class PhpTestsShell extends Shell
 	 */
 	private function _getFinalStatus($activityReport) {
 		foreach ($activityReport as $rec) {
-			if (stristr($rec['report'], self::PROCESS_CRASH_MESSAGE)) {
+			if (preg_match(self::PROCESS_CRASH_MESSAGE, $rec['report'])) {
 				return PhpTestsTable::STATUS_NEW;
 			}
 		}

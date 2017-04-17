@@ -1,6 +1,7 @@
 <?php
 namespace App\Lib;
 
+use ArtSkills\Http\Client;
 use Cake\Log\Log;
 use \Exception;
 
@@ -15,7 +16,7 @@ class GitHub
 
 	const DEFAULT_STATUS_CONTENT = 'Каратель говорит';
 
-	const RESPONSE_OK = 201;
+	const RESPONSE_OK = [200, 201];
 
 	/**
 	 * Токен доступа
@@ -55,7 +56,7 @@ class GitHub
 			]
 		]);
 
-		if ($result->getStatusCode() != self::RESPONSE_OK) {
+		if (!in_array($result->getStatusCode(), self::RESPONSE_OK)) {
 			Log::error('Bad GitHub response: '.print_r($result->json, true));
 		}
 		return $result->json;

@@ -1,18 +1,18 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \Cake\ORM\Entity $activity
+ * @var \App\Model\Entity\PhpTestActivity $activity
  */
 
 $elMinutes = floor($activity->elapsed_seconds / 60);
 $elSeconds = ceil($activity->elapsed_seconds - $elMinutes * 60);
 
 $testSteps = !is_array($activity->content)? json_decode($activity->content, true): $activity->content;
-$title = 'Тест ветки ' . $activity->php_test->ref . ' репозитория ' . $activity->php_test->repository;
+$title = 'Тест ветки ' . $activity->PhpTests->ref . ' репозитория ' . $activity->PhpTests->repository;
 $this->assign('title', $title);
 ?>
 <h1><?= $title ?>
-	<small><br/>Создан <?= $activity->php_test->created->format('d/m/y H:i'); ?>, а
+	<small><br/>Создан <?= $activity->PhpTests->created->format('d/m/y H:i'); ?>, а
 		выполнялся <?= $elMinutes > 0 ? $elMinutes . ' мин' : '' ?>
 		<?= $elSeconds > 0 ? $elSeconds . ' сек' : '' ?>.
 	</small>
@@ -29,7 +29,7 @@ $this->assign('title', $title);
 	<?php } ?>
 
 	<div>
-		<?= $this->Form->create(null, ['type' => 'put', 'url' => '/tests/edit/' . $activity->php_test->id]); ?>
+		<?= $this->Form->create(null, ['type' => 'put', 'url' => '/tests/edit/' . $activity->PhpTests->id]); ?>
 		<?= $this->Form->hidden('rerun_test', ['value' => 1]); ?>
 		<?= $this->Form->hidden('redirect', ['value' => 1]); ?>
 		<?= $this->Form->submit('Выполнить тест заново', ['class' => 'btn btn-warning']); ?>

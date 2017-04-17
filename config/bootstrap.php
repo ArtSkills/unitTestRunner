@@ -45,6 +45,9 @@ require __DIR__ . '/paths.php';
  */
 require CORE_PATH . 'config' . DS . 'bootstrap.php';
 
+// Константы с именами таблиц
+require APP . 'Model' . DS . 'table_names.php';
+
 use Cake\Cache\Cache;
 use Cake\Console\ConsoleErrorHandler;
 use Cake\Core\App;
@@ -109,16 +112,16 @@ ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
 /**
  * Register application error and exception handlers.
  */
-$isCli = PHP_SAPI === 'cli';
+$isCli = php_sapi_name() === 'cli';
 if ($isCli) {
-    (new ConsoleErrorHandler(Configure::read('Error')))->register();
+	(new \ArtSkills\Error\ConsoleErrorHandler(Configure::read('Error')))->register();
 } else {
-    (new ErrorHandler(Configure::read('Error')))->register();
+	(new \ArtSkills\Error\ErrorHandler(Configure::read('Error')))->register();
 }
 
 // Include the CLI bootstrap overrides.
 if ($isCli) {
-    require __DIR__ . '/bootstrap_cli.php';
+	require __DIR__ . '/bootstrap_cli.php';
 }
 
 /**
@@ -140,7 +143,7 @@ if (!Configure::read('App.fullBaseUrl')) {
     unset($httpHost, $s);
 }
 
-Cache::config(Configure::consume('Cache'));
+Cache::config(\ArtSkills\Lib\AppCache::getConfig());
 ConnectionManager::config(Configure::consume('Datasources'));
 Email::configTransport(Configure::consume('EmailTransport'));
 Email::config(Configure::consume('Email'));
@@ -211,3 +214,12 @@ if (Configure::read('debug')) {
 }
 
 Plugin::load('Migrations');
+
+if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
+	function mb_ucfirst($string, $enc = 'utf-8') {
+		$string = mb_strtoupper(mb_substr($string, 0, 1, $enc), $enc) . mb_strtolower(mb_substr($string, 1, mb_strlen($string, $enc) - 1, $enc), $enc);
+		return $string;
+	}
+}
+
+require_once AS_COMMON . 'functions.php';

@@ -13,8 +13,7 @@ abstract class AppTestCase extends TestCase
 	 */
 	public function setUp() {
 		parent::setUp();
-
-		$this->setUpSuite();
+		$this->_setUp();
 	}
 
 	/**
@@ -22,6 +21,13 @@ abstract class AppTestCase extends TestCase
 	 */
 	public function tearDown() {
 		parent::tearDown();
-		$this->tearDownSuite();
+		$this->_tearDown();
 	}
+
+	/** @inheritdoc */
+	public static function setUpBeforeClass() {
+		parent::setUpBeforeClass();
+		self::_setUpBeforeClass();
+	}
+
 }

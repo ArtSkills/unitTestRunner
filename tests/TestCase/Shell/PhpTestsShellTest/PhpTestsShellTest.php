@@ -8,8 +8,9 @@ use App\Lib\System;
 use App\Model\Table\PhpTestActivityTable;
 use App\Model\Table\PhpTestsTable;
 use App\Shell\PhpTestsShell;
-use App\Test\Suite\MethodMocker;
 use App\Test\TestCase\AppTestCase;
+use ArtSkills\TestSuite\Mock\MethodMocker;
+use Cake\ORM\Table;
 
 class PhpTestsShellTest extends AppTestCase
 {
@@ -30,7 +31,7 @@ class PhpTestsShellTest extends AppTestCase
 	/**
 	 * @inheritdoc
 	 */
-	public $fixtures = ['app.php_tests', 'app.php_test_activity'];
+	public $fixtures = [PHP_TESTS, PHP_TEST_ACTIVITY];
 
 	/**
 	 * @inheritdoc
@@ -100,13 +101,16 @@ class PhpTestsShellTest extends AppTestCase
 
 		$expectedStatuses = [
 			PhpTestsTable::STATUS_PROCESSING,
+			null,
 			PhpTestsTable::STATUS_FINISHED,
 		];
 		$statusesIndex = 0;
-		MethodMocker::sniff(PhpTestsTable::class, 'patchEntity', function ($args, $originalResult) use (
+		MethodMocker::sniff(Table::class, 'patchEntity', function ($args) use (
 			$expectedStatuses, &$statusesIndex
 		) {
-			self::assertEquals($args[1]['status'], $expectedStatuses[$statusesIndex]);
+			if (isset($args[1]['status'])) {
+				self::assertEquals($args[1]['status'], $expectedStatuses[$statusesIndex]);
+			}
 			$statusesIndex++;
 		});
 
@@ -218,7 +222,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$this->_makeDoDestMocks($testBranch, $executeResults);
 
-		$result = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_doTest', $this->PhpTestsShell, [
+		$result = MethodMocker::callPrivate($this->PhpTestsShell, '_doTest', [
 			$this->_repository,
 			$testBranch,
 		]);
@@ -241,7 +245,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$this->_makeDoDestMocks($testBranch, $executeResults);
 
-		$result = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_doTest', $this->PhpTestsShell, [
+		$result = MethodMocker::callPrivate($this->PhpTestsShell, '_doTest', [
 			$this->_repository,
 			$testBranch,
 		]);
@@ -259,7 +263,7 @@ class PhpTestsShellTest extends AppTestCase
 		];
 
 		$this->_makeDoDestMocks($testBranch, $executeResults, 'Import error!!!');
-		$result = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_doTest', $this->PhpTestsShell, [
+		$result = MethodMocker::callPrivate($this->PhpTestsShell, '_doTest',  [
 			$this->_repository,
 			$testBranch,
 		]);
@@ -269,7 +273,7 @@ class PhpTestsShellTest extends AppTestCase
 	/**
 	 * PHPUnit отвалился
 	 */
-	public function testDoTestBadCacke() {
+	public function testDoTestBadCake() {
 		$testBranch = 'SITE-23';
 
 		$executeResults = [
@@ -285,7 +289,7 @@ class PhpTestsShellTest extends AppTestCase
 
 		$this->_makeDoDestMocks($testBranch, $executeResults);
 
-		$result = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_doTest', $this->PhpTestsShell, [
+		$result = MethodMocker::callPrivate($this->PhpTestsShell, '_doTest', [
 			$this->_repository,
 			$testBranch,
 		]);
@@ -351,7 +355,7 @@ PHPUNITOUT;
 
 		$this->_makeDoDestMocks($testBranch, $executeResults);
 
-		$result = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_doTest', $this->PhpTestsShell, [
+		$result = MethodMocker::callPrivate($this->PhpTestsShell, '_doTest', [
 			$this->_repository,
 			$testBranch,
 		]);
@@ -367,7 +371,7 @@ PHPUNITOUT;
 	 */
 	private function _makeDoDestMocks($testBranch, $executeResults, $importStructResult = '') {
 		MethodMocker::mock(Git::class, 'checkout')
-			->expectArgs($testBranch)
+			->expectArgs($testBranch, null)
 			->singleCall()
 			->willReturnValue(true);
 
@@ -399,10 +403,10 @@ PHPUNITOUT;
 	 * Определяем финальный статус теста
 	 */
 	public function testGetFinalStatus() {
-		$testStatus = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_getFinalStatus', $this->PhpTestsShell, [json_decode(file_get_contents(__DIR__.'/reportWithCrash.json'), true)]);
+		$testStatus = MethodMocker::callPrivate($this->PhpTestsShell, '_getFinalStatus', [json_decode(file_get_contents(__DIR__.'/reportWithCrash.json'), true)]);
 		self::assertEquals(PhpTestsTable::STATUS_NEW, $testStatus);
 
-		$testStatus = MethodMocker::callPrivateOrProtectedMethod(PhpTestsShell::class, '_getFinalStatus', $this->PhpTestsShell, [json_decode(file_get_contents(__DIR__.'/reportGood.json'), true)]);
+		$testStatus = MethodMocker::callPrivate($this->PhpTestsShell, '_getFinalStatus', [json_decode(file_get_contents(__DIR__.'/reportGood.json'), true)]);
 		self::assertEquals(PhpTestsTable::STATUS_FINISHED, $testStatus);
 	}
 }

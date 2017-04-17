@@ -47,7 +47,7 @@ class TestsController extends AppController
 		parent::initialize();
 		$this->loadComponent('RequestHandler');
 		$this->_gitHub = new GitHub(Configure::read('gitToken'));
-		$this->loadModel('PhpTests');
+		$this->loadModel(PHP_TESTS);
 	}
 
 	/**
@@ -64,7 +64,6 @@ class TestsController extends AppController
 		if (empty($this->request->data['payload'])) {
 			return $this->_sendJsonError(self::MSG_ADD_BAD_ARGS);
 		}
-
 
 		$gitHeader = $this->request->header(self::GITHUB_SECRET_HEADER);
 		if (!$gitHeader || !$this->_gitHub->checkSecret($this->request->header(self::GITHUB_SECRET_HEADER), file_get_contents('php://input'), Configure::read('gitSecret'))) {
@@ -181,9 +180,8 @@ class TestsController extends AppController
 			return $this->_sendJsonError(self::MSG_EDIT_BAD_STATUS);
 		}
 
-		$this->PhpTests->patchEntity($curTest, ['status' => PhpTestsTable::STATUS_NEW]);
 		$this->_gitHub->changeCommitStatus($curTest->repository, $curTest->sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
-		$this->PhpTests->save($curTest);
+		$this->PhpTests->saveArr(['status' => PhpTestsTable::STATUS_NEW], $curTest);
 
 		if (!empty($this->request->data['redirect'])) {
 			return $this->redirect('https://github.com/' . $curTest->repository . '/pulls');

@@ -2,11 +2,9 @@
 namespace App\Test\TestCase\Lib\GitHubTest;
 
 use App\Lib\GitHub;
-use App\Test\Suite\HttpClientMocker;
-use App\Test\Suite\MethodMocker;
 use App\Test\TestCase\AppTestCase;
+use ArtSkills\TestSuite\HttpClientMock\HttpClientMocker;
 use Cake\Http\Client\Request;
-use Cake\Http\Client\Response;
 use \Exception;
 
 class GitHubTest extends AppTestCase
@@ -30,7 +28,7 @@ class GitHubTest extends AppTestCase
 		$testDescription = 'ggg';
 		$testResult = ['ok' => true];
 
-		HttpClientMocker::mock(GitHub::POOL . '/repos/' . $testRepository . '/statuses/' . $testSha, Response::METHOD_POST)
+		HttpClientMocker::mockPost(GitHub::POOL . '/repos/' . $testRepository . '/statuses/' . $testSha)
 			->willReturnAction(function ($request) use ($testState, $testDescription, $testResult) {
 				/**
 				 * @var Request $request

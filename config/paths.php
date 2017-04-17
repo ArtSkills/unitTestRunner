@@ -61,6 +61,8 @@ define('TESTS', ROOT . DS . 'tests' . DS);
  */
 define('TEST_FIXTURE', TESTS . 'Fixture' . DS . 'Data' . DS);
 
+define('AS_COMMON', ROOT . DS . 'vendor' . DS . 'artskills' . DS . 'common' . DS . 'src' . DS);
+
 /**
  * Path to the temporary files directory.
  */

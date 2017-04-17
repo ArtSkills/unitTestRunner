@@ -3,6 +3,7 @@
 namespace App\Test\TestCase\Controller\ActivityControllerTest;
 
 use App\Controller\ActivityController;
+use App\Model\Entity\PhpTestActivity;
 use App\Test\TestCase\Controller\AppControllerTestCase;
 
 class ActivityControllerTest extends AppControllerTestCase
@@ -10,7 +11,7 @@ class ActivityControllerTest extends AppControllerTestCase
 	/**
 	 * @inheritdoc
 	 */
-	public $fixtures = ['app.php_tests', 'app.php_test_activity'];
+	public $fixtures = [PHP_TESTS, PHP_TEST_ACTIVITY];
 
 	/**
 	 * Некорректная запись в логе
@@ -28,8 +29,9 @@ class ActivityControllerTest extends AppControllerTestCase
 		$activityId = 2;
 
 		$this->get('/tests/' . $testId . '/activity/' . $activityId);
+		/** @var PhpTestActivity $viewActivity */
 		$viewActivity = $this->viewVariable('activity');
 		self::assertEquals($activityId, $viewActivity->id);
-		self::assertEquals($testId, $viewActivity->php_test->id);
+		self::assertEquals($testId, $viewActivity->PhpTests->id);
 	}
 }

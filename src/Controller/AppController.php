@@ -14,7 +14,7 @@
  */
 namespace App\Controller;
 
-use Cake\Controller\Controller;
+use ArtSkills\Controller\Controller;
 use Cake\Event\Event;
 
 /**
@@ -59,41 +59,4 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
     }
-
-	/**
-	 * Отправляет JSON ответ
-	 *
-	 * @param array $jsonArray
-	 * @return NULL
-	 */
-	private function _sendJsonResponse($jsonArray) {
-		$jsonArray['_serialize'] = array_keys($jsonArray);
-		$jsonArray['_jsonOptions'] = JSON_UNESCAPED_UNICODE;
-
-		$this->set($jsonArray);
-		$this->viewBuilder()->className('Json');
-		return null;
-	}
-
-	/**
-	 * Возвращает ответ без ошибки и прерывает выполнение
-	 *
-	 * @param array $jsonData
-	 * @return NULL
-	 */
-
-	protected function _sendJsonOk($jsonData) {
-		return $this->_sendJsonResponse(['status' => 'ok'] + $jsonData);
-	}
-
-	/**
-	 * Возвращает ответ с ошибкой, сообщением, и прерывает выполнение
-	 *
-	 * @param string $message
-	 * @param array $jsonData дополнительные параметры если нужны
-	 * @return NULL
-	 */
-	protected function _sendJsonError($message, $jsonData = []) {
-		return $this->_sendJsonResponse(['status' => 'error', 'message' => $message] + $jsonData);
-	}
 }

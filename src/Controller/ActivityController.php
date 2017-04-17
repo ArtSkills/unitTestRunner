@@ -10,7 +10,7 @@ namespace App\Controller;
 use App\Model\Table\PhpTestActivityTable;
 
 /**
- * @param PhpTestActivityTable $PhpTestActivity
+ * @property  PhpTestActivityTable $PhpTestActivity
  */
 class ActivityController extends AppController
 {
@@ -39,11 +39,11 @@ class ActivityController extends AppController
 	public function view($id) {
 		$testId = $this->request->param('test_id');
 
-		$this->loadModel('PhpTestActivity');
+		$this->loadModel(PHP_TEST_ACTIVITY);
 
 		$activity = $this->PhpTestActivity->find()
 			->where(['PhpTestActivity.id' => $id, 'php_test_id' => $testId])
-			->contain('PhpTests')
+			->contain(PHP_TESTS)
 			->first();
 		if (!$activity) {
 			$this->_sendJsonError(self::MSG_NOT_FOUND);
