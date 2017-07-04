@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Lib;
 
 use ArtSkills\Http\Client;
+use Cake\Core\Configure;
 use Cake\Log\Log;
 use \Exception;
 
@@ -52,12 +54,12 @@ class GitHub
 			'type' => 'json',
 			'headers' => [
 				'User-Agent' => 'UnitTestRunner',
-				'Authorization' => 'token ' . $this->_token
-			]
+				'Authorization' => 'token ' . $this->_token,
+			],
 		]);
 
 		if (!in_array($result->getStatusCode(), self::RESPONSE_OK)) {
-			Log::error('Bad GitHub response: '.print_r($result->json, true));
+			Log::error('Bad GitHub response: ' . print_r($result->json, true));
 		}
 		return $result->json;
 	}
@@ -73,9 +75,10 @@ class GitHub
 	 * @return array
 	 */
 	public function changeCommitStatus($repository, $sha, $state, $description, $targetUrl = false) {
+		$serverId = Configure::read('serverId');
 		$toSend = [
 			'state' => $state,
-			'context' => self::DEFAULT_STATUS_CONTENT,
+			'context' => self::DEFAULT_STATUS_CONTENT . (!empty($serverId) ? ' (' . $serverId . ')' : ''),
 			'description' => $description,
 		];
 
@@ -95,7 +98,7 @@ class GitHub
 	 * @return string
 	 */
 	public function buildSecret($data, $secret, $algo = 'sha1') {
-		return $algo.'='.hash_hmac($algo, $data, $secret);
+		return $algo . '=' . hash_hmac($algo, $data, $secret);
 	}
 
 	/**
@@ -108,6 +111,6 @@ class GitHub
 	 */
 	public function checkSecret($gitHeader, $rawPost, $secret) {
 		list($algo, $hash) = explode('=', $gitHeader, 2) + ['', ''];
-		return  $gitHeader === $this->buildSecret($rawPost, $secret, $algo);
+		return $gitHeader === $this->buildSecret($rawPost, $secret, $algo);
 	}
 }

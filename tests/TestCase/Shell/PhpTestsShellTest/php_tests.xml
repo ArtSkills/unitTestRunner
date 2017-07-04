@@ -10,6 +10,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<field name="ref">SITE-23</field>
 		<field name="sha">f1f968414c21636c921a180aad7ec100830a122b</field>
 		<field name="status">success</field>
+		<field name="server_id">PHP5</field>
 		<field name="created">2016-08-15 14:34:02</field>
 		<field name="updated">2016-08-16 13:32:33</field>
 	</row>
@@ -20,6 +21,18 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<field name="ref">SITE-23</field>
 		<field name="sha">f1f968414c21636c921a180aad7ec100830a122b</field>
 		<field name="status">new</field>
+		<field name="server_id">PHP5</field>
+		<field name="created">2016-08-15 14:34:02</field>
+		<field name="updated">2016-08-16 13:32:33</field>
+	</row>
+
+	<row>
+		<field name="id">8</field>
+		<field name="repository">ArtSkills/site</field>
+		<field name="ref">SITE-23</field>
+		<field name="sha">f1f968414c21636c921a180aad7ec100830a122b</field>
+		<field name="status">new</field>
+		<field name="server_id">PHP7</field>
 		<field name="created">2016-08-15 14:34:02</field>
 		<field name="updated">2016-08-16 13:32:33</field>
 	</row>

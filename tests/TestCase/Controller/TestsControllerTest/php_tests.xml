@@ -11,6 +11,18 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<field name="ref">CRM-26</field>
 		<field name="sha">956f9f1b08f842b767a6fcf3dc4e8eb6370d8601</field>
 		<field name="status">success</field>
+		<field name="server_id">PHP5</field>
+		<field name="created">2016-08-24 15:00:30</field>
+		<field name="updated">2016-08-25 06:53:52</field>
+	</row>
+
+	<row>
+		<field name="id">30</field>
+		<field name="repository">ArtSkills/site</field>
+		<field name="ref">selectFix</field>
+		<field name="sha">1e213b4766312f505090ac49c80d1e61c8574767</field>
+		<field name="status">new</field>
+		<field name="server_id">PHP7</field>
 		<field name="created">2016-08-24 15:00:30</field>
 		<field name="updated">2016-08-25 06:53:52</field>
 	</row>

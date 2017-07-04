@@ -18,5 +18,6 @@
  * @property {string} created = 'CURRENT_TIMESTAMP'
  * @property {string} updated = 'CURRENT_TIMESTAMP'
  * @property {PhpTestActivityEntity[]} PhpTestActivity php_test_id => id
+ * @property {string} server_ip = NULL
  */
 

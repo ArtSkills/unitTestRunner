@@ -17,6 +17,7 @@
 * string `status` = 'new'
 * \Cake\I18n\Time `created` = 'CURRENT_TIMESTAMP'
 * \Cake\I18n\Time `updated` = 'CURRENT_TIMESTAMP'
+* string `server_ip` = NULL
 ### Связи:
 * PhpTestActivity[] `$PhpTestActivity` PhpTestActivity.php_test_id => PhpTests.id
 

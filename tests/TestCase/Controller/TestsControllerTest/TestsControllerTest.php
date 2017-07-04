@@ -16,6 +16,11 @@ class TestsControllerTest extends AppControllerTestCase
 	 */
 	public $fixtures = [PHP_TESTS];
 
+	/** @inheritdoc */
+	public function setUp() {
+		parent::setUp();
+	}
+
 	/**
 	 * Добавление теста
 	 */
@@ -57,16 +62,19 @@ class TestsControllerTest extends AppControllerTestCase
 	 */
 	public function testAdd() {
 		$this->_setSecretHeader();
+		$phpTests = PhpTestsTable::instance();
 
 		MethodMocker::mock(GitHub::class, 'changeCommitStatus')
 			->expectCall(3);
 
 		$payload = file_get_contents(__DIR__ . '/pull_request.json');
 
+		$oldCount = $phpTests->find()->count();
 		$this->post('/tests', ['payload' => $payload]);
+		$newCount = $phpTests->find()->count();
+		self::assertGreaterThan($oldCount, $newCount, 'Не добавилась новая запись');
 
-		$phpTests = PhpTestsTable::instance();
-		$conditions = ['repository' => 'ArtSkills/site', 'ref' => 'selectFix', 'status' => PhpTestsTable::STATUS_NEW];
+		$conditions = ['repository' => 'ArtSkills/site', 'ref' => 'selectFix', 'status' => PhpTestsTable::STATUS_NEW, 'server_id' => Configure::read('serverId')];
 		$newTest = $phpTests->find()
 			->where($conditions)
 			->first();

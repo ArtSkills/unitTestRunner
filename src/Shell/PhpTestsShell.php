@@ -34,9 +34,10 @@ class PhpTestsShell extends Shell
 	 */
 	public function main() {
 		$this->loadModel('PhpTests');
+		$serverId = Configure::read('serverId');
 
 		$phpTest = $this->PhpTests->find()
-			->where(['status' => PhpTestsTable::STATUS_NEW])
+			->where(['status' => PhpTestsTable::STATUS_NEW, 'server_id' => $serverId])
 			->order(['id' => 'asc'])
 			->first();
 
@@ -48,6 +49,7 @@ class PhpTestsShell extends Shell
 		if ($this->PhpTests->find()->where([
 			'repository' => $phpTest->repository,
 			'status' => PhpTestsTable::STATUS_PROCESSING,
+			'server_id' => $phpTest->server_id,
 		])->count()
 		) {
 			return;
@@ -134,10 +136,14 @@ class PhpTestsShell extends Shell
 				$resultArr[] = $this->_formatReport('Run composer', nl2br(System::execute($this->_getCmd($repositoryConfig['composerUpdateCommand']), $this->_getWorkDir($repositoryConfig['composerUpdateCommand'], $repositoryConfig))), microtime(true));
 
 				$migrationStartTime = microtime(true);
-				$migrationsLog = System::execute($this->_getCmd($repositoryConfig['phinxCommand']), $this->_getWorkDir($repositoryConfig['phinxCommand'], $repositoryConfig));
-				$resultArr[] = $this->_formatReport('Run migrations', nl2br($migrationsLog), $migrationStartTime);
+				if (!empty($repositoryConfig['phinxCommand'])) {
+					$migrationsLog = System::execute($this->_getCmd($repositoryConfig['phinxCommand']), $this->_getWorkDir($repositoryConfig['phinxCommand'], $repositoryConfig));
+					$resultArr[] = $this->_formatReport('Run migrations', nl2br($migrationsLog), $migrationStartTime);
+				} else {
+					$migrationsLog = null;
+				}
 
-				if (preg_match(self::SUCCESS_PHINX_REGEXP, $migrationsLog)) {
+				if ($migrationsLog === null || preg_match(self::SUCCESS_PHINX_REGEXP, $migrationsLog)) {
 					$phpUnitStartTime = microtime(true);
 					$unitTestLog = System::execute($this->_getCmd($repositoryConfig['phpUnitCommand']), $this->_getWorkDir($repositoryConfig['phpUnitCommand'], $repositoryConfig));
 					if (preg_match(self::SUCCESS_PHPUNIT_REGEXP, $unitTestLog) && !preg_match(self::PHP_WARNING_REGEXP, $unitTestLog)) {

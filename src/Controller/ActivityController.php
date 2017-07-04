@@ -37,7 +37,7 @@ class ActivityController extends AppController
 	 * @param string $id
 	 */
 	public function view($id) {
-		$testId = $this->request->param('test_id');
+		$testId = $this->request->getParam('test_id');
 
 		$this->loadModel(PHP_TEST_ACTIVITY);
 

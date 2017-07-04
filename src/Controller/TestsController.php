@@ -70,7 +70,7 @@ class TestsController extends AppController
 			return $this->_sendJsonError(self::MSG_ADD_BAD_SECRET);
 		}
 
-		$payLoad = json_decode($this->request->data['payload'], true);
+		$payLoad = json_decode($this->request->getData('payload'), true);
 		if (empty($payLoad['pull_request'])) {
 			return $this->_sendJsonError(self::MSG_ADD_BAD_ACTION);
 		}
@@ -102,11 +102,13 @@ class TestsController extends AppController
 	 * @return int
 	 */
 	private function _processPullRequest($repository, $ref, $sha) {
+		$serverId = Configure::read('serverId');
 		$existingTest = $this->PhpTests->find()
 			->where([
 				'repository' => $repository,
 				'ref' => $ref,
 				'status' => PhpTestsTable::STATUS_NEW,
+				'server_id' => $serverId,
 			])->first();
 
 		$newRec = $this->PhpTests->saveArr([
@@ -114,6 +116,7 @@ class TestsController extends AppController
 			'ref' => $ref,
 			'sha' => $sha,
 			'status' => PhpTestsTable::STATUS_NEW,
+			'server_id' => $serverId,
 		], $existingTest);
 
 		$this->_gitHub->changeCommitStatus($repository, $sha, GitHub::STATE_PROCESSING, self::PUSH_QUEUE_MESSAGE);
@@ -129,11 +132,13 @@ class TestsController extends AppController
 	 * @return bool
 	 */
 	private function _cancelPullRequest($repository, $ref, $sha) {
+		$serverId = Configure::read('serverId');
 		$existingTest = $this->PhpTests->find()
 			->where([
 				'repository' => $repository,
 				'ref' => $ref,
 				'sha' => $sha,
+				'server_id' => $serverId,
 				'status' => PhpTestsTable::STATUS_NEW,
 			])->first();
 

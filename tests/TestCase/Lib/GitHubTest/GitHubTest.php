@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Test\TestCase\Lib\GitHubTest;
 
 use App\Lib\GitHub;
 use App\Test\TestCase\AppTestCase;
 use ArtSkills\TestSuite\HttpClientMock\HttpClientMocker;
+use Cake\Core\Configure;
 use Cake\Http\Client\Request;
 use \Exception;
 
@@ -36,7 +38,7 @@ class GitHubTest extends AppTestCase
 				$reqBody = json_decode($request->body(), true);
 				self::assertEquals([
 					'state' => $testState,
-					'context' => GitHub::DEFAULT_STATUS_CONTENT,
+					'context' => GitHub::DEFAULT_STATUS_CONTENT . ' (' . Configure::read('serverId') . ')',
 					'description' => $testDescription,
 				], $reqBody, 'Передались некорректные данные');
 

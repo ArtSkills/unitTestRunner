@@ -20,6 +20,7 @@ namespace App\Model\Table;
  * @method \App\Model\Entity\PhpTestActivity get($primaryKey, array|\ArrayAccess $options = [])
  * @method \App\Model\Entity\PhpTestActivity|false getEntity(\App\Model\Entity\PhpTestActivity|int $entity, array|\ArrayAccess $options = [])
  * @method \App\Model\Entity\PhpTestActivity|null updateWithLock(\App\Model\Query\PhpTestActivityQuery|array $queryData, array $updateData)
+ * @method \App\Model\Entity\PhpTestActivity touch(\App\Model\Entity\PhpTestActivity $entity, string $eventName = 'Model.beforeSave')
  */
 class PhpTestActivityTable extends AppTable
 {

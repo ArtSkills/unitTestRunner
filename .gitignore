@@ -1,6 +1,8 @@
 /.idea/*
 /vendor/*
 /config/app.php
+/config/app.php7.php
+/config/app.php5.php
 /tmp/*
 /logs/*
 /composer.phar

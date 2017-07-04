@@ -10,6 +10,7 @@ namespace App\Model\Entity;
  * @property \Cake\I18n\Time $created = 'CURRENT_TIMESTAMP'
  * @property \Cake\I18n\Time $updated = 'CURRENT_TIMESTAMP'
  * @property PhpTestActivity[] $PhpTestActivity `php_test_id` => `id`
+ * @property string $server_id = NULL
  */
 class PhpTests extends AppEntity
 {
